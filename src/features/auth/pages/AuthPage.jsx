@@ -1,6 +1,6 @@
 // src/pages/AuthPage.jsx
 import { useState } from "react";
-import LoginForm from "../components/LoginForm.jsx";
+import { LoginForm } from "../components/LoginForm.jsx";
 import { ForgotPasswordForm } from "../components/ForgotPasswordForm.jsx";
 
 const AuthPage = () => {

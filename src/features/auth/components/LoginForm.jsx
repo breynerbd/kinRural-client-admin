@@ -1,8 +1,35 @@
 // src/components/LoginForm.jsx
-const LoginForm = ({ onForgotPassword, onSwitchToRegister }) => {
+import { useAuthStore } from '../store/authStore.js';
+import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import toast from "react-hot-toast";
+
+export const LoginForm = ({ onForgotPassword, onSwitchToRegister }) => {
+    const navigate = useNavigate();
+
+    const login = useAuthStore((state) => state.login);
+    const loading = useAuthStore((state) => state.loading);
+    const error = useAuthStore((state) => state.error);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm();
+
+    const onSumnit = async (data) => {
+        const res = await login(data);
+        if (res) {
+            navigate("/dashboard");
+            toast.success("Bienvenido de nuevo 🚀");
+        } else {
+            toast.error(res.error);
+        }
+    };
+
     return (
         <>
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit(onSumnit)}>
 
                 {/* Email/usuario */}
                 <div>
@@ -16,6 +43,7 @@ const LoginForm = ({ onForgotPassword, onSwitchToRegister }) => {
                         id="email"
                         type="text"
                         placeholder="tu@email.com"
+                        {...register("email", { required: true })}
                         className="w-full px-3 py-2 text-sm border border-[#677750] rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-[#677750] transition"
                     />
                 </div>
@@ -32,6 +60,7 @@ const LoginForm = ({ onForgotPassword, onSwitchToRegister }) => {
                         id="password"
                         type="password"
                         placeholder="••••••••"
+                        {...register("password", { required: true, minLength: 8 })}
                         className="w-full px-3 py-2 text-sm border border-[#677750] rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-[#677750] transition"
                     />
                 </div>
@@ -68,5 +97,3 @@ const LoginForm = ({ onForgotPassword, onSwitchToRegister }) => {
         </>
     );
 };
-
-export default LoginForm;
