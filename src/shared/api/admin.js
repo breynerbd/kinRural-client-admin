@@ -1,7 +1,8 @@
 import { axiosAdmin } from "./api";
 
 // ================= USERS =================
-export const getUsers = () => axiosAdmin.get("/users");
+export const getUsers = (page = 1, limit = 10) =>
+    axiosAdmin.get(`/users?page=${page}&limit=${limit}`);
 
 export const getUserById = (id) => axiosAdmin.get(`/users/${id}`);
 
