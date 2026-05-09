@@ -1,160 +1,280 @@
-import { useState } from "react";
+import { useSaveAccountRequest } from "../hooks/useSaveAccountRequest";
+import { useAccountRequestStore } from "../store/accountRequestStore";
 
 export const AccountRequestModal = ({
   isOpen,
   onClose,
   request,
-  onApprove,
-  onReject,
 }) => {
-  const [loading, setLoading] = useState(false);
+
+  const {
+    handleApprove,
+    handleReject,
+  } = useSaveAccountRequest();
+
+  const actionLoading = useAccountRequestStore(
+    (state) => state.actionLoading
+  );
 
   if (!isOpen || !request) return null;
 
-  const handleApprove = async () => {
-    try {
-      setLoading(true);
+  // =========================
+  // ACTIONS
+  // =========================
+  const approve = async () => {
 
-      console.log("Aprobando:", request.id);
+    const success = await handleApprove(
+      request.id
+    );
 
-      /*
-      await fetch(`/account-requests/${request.id}/approve`, {
-        method: "PATCH",
-      });
-      */
-
-      onApprove(request.id); // 🔥 conecta con el estado global
+    if (success) {
       onClose();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
     }
+
   };
 
-  const handleReject = async () => {
-    try {
-      setLoading(true);
+  const reject = async () => {
 
-      console.log("Rechazando:", request.id);
+    const success = await handleReject(
+      request.id
+    );
 
-      /*
-      await fetch(`/account-requests/${request.id}/reject`, {
-        method: "PATCH",
-      });
-      */
-
-      onReject(request.id); // 🔥 conecta con el estado global
+    if (success) {
       onClose();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
     }
+
+  };
+
+  // =========================
+  // STATUS STYLES
+  // =========================
+  const statusStyles = {
+    PENDIENTE:
+      "bg-yellow-100 text-yellow-700",
+
+    APROBADA:
+      "bg-green-100 text-green-700",
+
+    RECHAZADA:
+      "bg-red-100 text-red-700",
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 px-3">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-3">
+
+      <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
 
         {/* HEADER */}
-        <div className="p-5 text-white bg-[#677750]">
+        <div className="bg-[#677750] p-6 text-white">
+
           <h2 className="text-2xl font-bold">
-            Solicitud de Cuenta
+            Gestión de Solicitud
           </h2>
+
           <p className="text-sm opacity-80">
-            Revisa y decide sobre la solicitud
+            Revisa la información del solicitante
           </p>
+
         </div>
 
-        {/* CONTENIDO */}
-        <div className="p-6 space-y-4 overflow-y-auto">
+        {/* CONTENT */}
+        <div className="p-6 overflow-y-auto space-y-6">
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* INFO */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
+            {/* FULL NAME */}
             <div>
-              <p className="text-xs text-gray-500">Nombre</p>
-              <p className="font-medium text-[#677750]">
-                {request.nombre} {request.apellido}
+              <p className="label">
+                Nombre completo
+              </p>
+
+              <p className="value">
+                {request.fullName}
               </p>
             </div>
 
+            {/* EMAIL */}
             <div>
-              <p className="text-xs text-gray-500">Correo</p>
-              <p className="font-medium text-[#677750]">
-                {request.correo}
+              <p className="label">
+                Correo
+              </p>
+
+              <p className="value">
+                {request.email}
               </p>
             </div>
 
+            {/* DPI */}
             <div>
-              <p className="text-xs text-gray-500">DPI</p>
-              <p className="font-medium text-[#677750]">
+              <p className="label">
+                DPI
+              </p>
+
+              <p className="value">
                 {request.dpi}
               </p>
             </div>
 
+            {/* PHONE */}
             <div>
-              <p className="text-xs text-gray-500">Teléfono</p>
-              <p className="font-medium text-[#677750]">
-                {request.telefono || "—"}
+              <p className="label">
+                Teléfono
+              </p>
+
+              <p className="value">
+                {request.phone}
               </p>
             </div>
 
-            <div className="md:col-span-2">
-              <p className="text-xs text-gray-500">Dirección</p>
-              <p className="font-medium text-[#677750]">
-                {request.direccion || "—"}
+            {/* ACCOUNT TYPE */}
+            <div>
+              <p className="label">
+                Tipo de cuenta
+              </p>
+
+              <span
+                className={`
+                  px-3 py-1 rounded-full text-xs font-semibold
+                  ${
+                    request.tipo === "AHORRO"
+                      ? "bg-green-100 text-green-700"
+                      : "bg-blue-100 text-blue-700"
+                  }
+                `}
+              >
+                {request.tipo}
+              </span>
+            </div>
+
+            {/* STATUS */}
+            <div>
+              <p className="label">
+                Estado
+              </p>
+
+              <span
+                className={`
+                  px-3 py-1 rounded-full text-xs font-semibold
+                  ${statusStyles[request.status]}
+                `}
+              >
+                {request.status}
+              </span>
+            </div>
+
+            {/* USER ID */}
+            <div>
+              <p className="label">
+                Usuario ID
+              </p>
+
+              <p className="value">
+                {request.user_id}
+              </p>
+            </div>
+
+            {/* CREATED DATE */}
+            <div>
+              <p className="label">
+                Fecha de solicitud
+              </p>
+
+              <p className="value">
+                {
+                  new Date(
+                    request.createdAt
+                  ).toLocaleDateString()
+                }
               </p>
             </div>
 
           </div>
 
-          {/* ESTADO */}
-          <div className="pt-4 border-t border-[#677750]/10">
-            <p className="text-sm text-[#677750]/70 mb-2">Estado actual</p>
-            <span
-              className={`px-3 py-1 rounded-full text-xs font-medium
-                ${
-                  request.estado === "PENDIENTE"
-                    ? "bg-yellow-100 text-yellow-700"
-                    : request.estado === "APROBADO"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-red-100 text-red-700"
-                }`}
-            >
-              {request.estado}
-            </span>
-          </div>
+          {/* ACTIONS */}
+          <div className="pt-5 border-t border-[#677750]/10 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
 
-          {/* BOTONES */}
-          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-4 border-t border-[#677750]/10">
-
+            {/* CLOSE */}
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition"
+              className="
+                px-4 py-2 rounded-lg
+                bg-gray-100 text-gray-700
+                hover:bg-gray-200
+                transition
+              "
             >
               Cerrar
             </button>
 
+            {/* REJECT */}
             <button
-              onClick={handleReject}
-              disabled={loading || request.estado !== "PENDIENTE"}
-              className="px-5 py-2 rounded-lg text-white font-medium bg-red-600 hover:bg-red-700 transition disabled:opacity-50"
+              onClick={reject}
+              disabled={
+                actionLoading ||
+                request.status !== "PENDIENTE"
+              }
+              className="
+                px-5 py-2 rounded-lg
+                bg-red-600 text-white
+                hover:bg-red-700
+                transition
+                disabled:opacity-50
+                disabled:cursor-not-allowed
+              "
             >
-              {loading ? "Procesando..." : "Rechazar"}
+              {
+                actionLoading
+                  ? "Procesando..."
+                  : "Rechazar"
+              }
             </button>
 
+            {/* APPROVE */}
             <button
-              onClick={handleApprove}
-              disabled={loading || request.estado !== "PENDIENTE"}
-              className="px-5 py-2 rounded-lg text-white font-medium bg-green-600 hover:bg-green-700 transition disabled:opacity-50"
+              onClick={approve}
+              disabled={
+                actionLoading ||
+                request.status !== "PENDIENTE"
+              }
+              className="
+                px-5 py-2 rounded-lg
+                bg-green-600 text-white
+                hover:bg-green-700
+                transition
+                disabled:opacity-50
+                disabled:cursor-not-allowed
+              "
             >
-              {loading ? "Procesando..." : "Aprobar"}
+              {
+                actionLoading
+                  ? "Procesando..."
+                  : "Aprobar"
+              }
             </button>
 
           </div>
+
         </div>
+
       </div>
+
+      {/* STYLES */}
+      <style>
+        {`
+          .label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 4px;
+          }
+
+          .value {
+            font-weight: 600;
+            color: #677750;
+          }
+        `}
+      </style>
+
     </div>
   );
 };

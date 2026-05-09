@@ -4,9 +4,11 @@ import { axiosAdmin } from "./api";
 export const getUsers = (page = 1, limit = 10) =>
     axiosAdmin.get(`/users?page=${page}&limit=${limit}`);
 
-export const getUserById = (id) => axiosAdmin.get(`/users/${id}`);
+export const getUserById = (id) =>
+    axiosAdmin.get(`/users/${id}`);
 
-export const createUser = (data) => axiosAdmin.post("/users", data);
+export const createUser = (data) =>
+    axiosAdmin.post("/users", data);
 
 export const updateUser = (id, data) =>
     axiosAdmin.put(`/users/${id}`, data);
@@ -16,26 +18,31 @@ export const deleteUser = (id) =>
 
 
 // ================= ROLES =================
-export const getRoles = () => axiosAdmin.get("/roles");
+// ================= ROLES =================
+
+export const getRoles = () =>
+  axiosAdmin.get("/roles");
 
 export const createRole = (data) =>
-    axiosAdmin.post("/roles", data);
+  axiosAdmin.post("/roles", data);
 
 export const deleteRole = (id) =>
-    axiosAdmin.delete(`/roles/${id}`);
+  axiosAdmin.delete(`/roles/${id}`);
 
 
 // ================= ACCOUNTS =================
-export const getAccounts = () => axiosAdmin.get("/accounts");
+// ================= ACCOUNTS =================
+export const getAccounts = () =>
+  axiosAdmin.get("/accounts");
 
 export const getAccountById = (id) =>
-    axiosAdmin.get(`/accounts/${id}`);
+  axiosAdmin.get(`/accounts/${id}`);
 
 export const createAccount = (data) =>
-    axiosAdmin.post("/accounts", data);
+  axiosAdmin.post("/accounts", data);
 
 export const deleteAccount = (id) =>
-    axiosAdmin.delete(`/accounts/${id}`);
+  axiosAdmin.delete(`/accounts/${id}`);
 
 
 // ================= ACCOUNT REQUESTS =================
@@ -86,10 +93,10 @@ export const blockCard = (id, data) =>
 
 // ================= TRANSACTIONS =================
 export const getTransactions = () =>
-    axiosAdmin.get("/transactions");
+  axiosAdmin.get("/transactions");
 
 export const getTransactionsByAccount = (id) =>
-    axiosAdmin.get(`/transactions/${id}`);
+  axiosAdmin.get(`/transactions/${id}`);
 
 export const createTransaction = (data) =>
-    axiosAdmin.post("/transactions", data);
+  axiosAdmin.post("/transactions", data);

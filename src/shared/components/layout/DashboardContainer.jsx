@@ -9,16 +9,46 @@ export const DashboardContainer = () => {
       {/* Navbar */}
       <Navbar />
 
-      <div className="flex flex-1">
+      <div className="flex flex-col md:flex-row flex-1">
 
         {/* Sidebar */}
-        <Sidebar />
+        <div
+          className="
+            w-full
+            md:w-auto
+            md:min-h-full
+          "
+        >
+          <Sidebar />
+        </div>
 
         {/* Contenido dinámico */}
-        <main className="flex-1 p-6">
-          <div className="bg-white border border-[#677750]/10 rounded-2xl shadow-sm p-6 min-h-full">
+        <main
+          className="
+            flex-1
+            p-3
+            sm:p-4
+            md:p-6
+            overflow-x-auto
+          "
+        >
+          <div
+            className="
+              bg-white
+              border
+              border-[#677750]/10
+              rounded-xl
+              md:rounded-2xl
+              shadow-sm
+              p-3
+              sm:p-4
+              md:p-6
+              min-h-full
+              w-full
+            "
+          >
 
-            <Outlet /> {/* 🔥 aquí se renderizan las rutas */}
+            <Outlet />
 
           </div>
         </main>

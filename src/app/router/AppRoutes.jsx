@@ -18,6 +18,9 @@ import { AccountRequestModal } from "../../features/accountRequests/components/A
 import { Loans } from "../../features/loans/components/Loans.jsx";
 import { LoanModal } from "../../features/loans/components/LoanModal.jsx";
 
+import { Cards } from "../../features/cards/components/Cards.jsx";
+import { CardModal } from "../../features/cards/components/CardModal.jsx";
+
 import { Transactions } from "../../features/transactions/components/Transactions.jsx";
 import { TransactionModal } from "../../features/transactions/components/TransactionModal.jsx";
 
@@ -50,6 +53,10 @@ export const AppRoutes = () => {
         {/* Préstamos */}
         <Route path="loans" element={<Loans />} />
         <Route path="loans/review" element={<LoanModal />} />
+
+        {/* Tarjetas */}
+        <Route path="cards" element={<Cards />} />
+        <Route path="cards/review" element={<CardModal />} />
 
         {/* Transacciones */}
         <Route path="transactions" element={<Transactions />} />
