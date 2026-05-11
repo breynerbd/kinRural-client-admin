@@ -1,8 +1,15 @@
 // src/features/transactions/components/TransactionModal.jsx
 
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-
 import { useSaveTransaction } from "../hooks/useSaveTransaction";
+import { useAccountStore } from "../../accounts/store/accountStore";
+import { showConfirmToast } from "../../auth/components/ConfirmModal";
+
+import {
+  showSuccess,
+  showError,
+} from "../../../shared/utils/toast";
 
 export const TransactionModal = ({
   isOpen,
@@ -10,11 +17,18 @@ export const TransactionModal = ({
 }) => {
 
   const { handleCreate } = useSaveTransaction();
+const {
+  accounts,
+  getAccounts,
+} = useAccountStore();
+const [searchOrigen, setSearchOrigen] = useState("");
+const [searchDestino, setSearchDestino] = useState("");
 
   const {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: {
@@ -24,27 +38,110 @@ export const TransactionModal = ({
     },
   });
 
+  useEffect(() => {
+
+  if (isOpen) {
+    getAccounts();
+  }
+
+}, [isOpen]);
+const cuentaOrigenSeleccionada = watch("cuenta_origen_id");
+const filteredOrigenAccounts = accounts.filter((account) => {
+
+  const text =
+    `
+      ${account.tipo}
+      ${account.user?.nombre}
+      ${account.user?.apellido}
+      ${account.numero_cuenta}
+    `
+      .toLowerCase();
+
+  return text.includes(searchOrigen.toLowerCase());
+});
+const filteredDestinoAccounts = accounts
+  .filter(
+    (account) =>
+      String(account.id) !== String(cuentaOrigenSeleccionada)
+  )
+  .filter((account) => {
+
+    const text =
+      `
+        ${account.tipo}
+        ${account.user?.nombre}
+        ${account.user?.apellido}
+        ${account.numero_cuenta}
+      `
+        .toLowerCase();
+
+    return text.includes(searchDestino.toLowerCase());
+  });
+
+const formatAccountNumber = (numero) => {
+ return numero;
+};
+
   if (!isOpen) return null;
 
   /* =========================
      SUBMIT
   ========================= */
 
-  const onSubmit = async (data) => {
+const onSubmit = async (data) => {
+
+  const cuentaOrigen = accounts.find(
+    (acc) =>
+      String(acc.id) ===
+      String(data.cuenta_origen_id)
+  );
+
+  const cuentaDestino = accounts.find(
+    (acc) =>
+      String(acc.id) ===
+      String(data.cuenta_destino_id)
+  );
+showConfirmToast({
+
+  title: "Confirmar transferencia",
+
+  message:
+`
+¿Estás seguro de realizar esta transferencia?
+
+El dinero será transferido inmediatamente
+a la cuenta destino.
+`,
+
+  onConfirm: async () => {
+
     try {
 
-      const ok = await handleCreate(data);
+      await handleCreate(data);
 
-      if (!ok) return;
+      showSuccess(
+        "Transferencia realizada correctamente"
+      );
 
       reset();
 
       onClose();
 
     } catch (error) {
-      console.error(error);
+
+      showError(
+        error.response?.data?.message ||
+        "Error al realizar transferencia"
+      );
+
     }
-  };
+
+  },
+
+});
+
+};
+
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 px-3 sm:px-4">
@@ -79,19 +176,37 @@ export const TransactionModal = ({
             <label className="label">
               Cuenta origen
             </label>
-
             <input
-              type="number"
-              placeholder="Ej: 1"
-              className="input"
-              {...register("cuenta_origen_id", {
-                required: "La cuenta origen es obligatoria",
-                min: {
-                  value: 1,
-                  message: "Debe ser un ID válido",
-                },
-              })}
-            />
+  type="text"
+  placeholder="Buscar cuenta..."
+  className="input mb-2"
+  value={searchOrigen}
+  onChange={(e) => setSearchOrigen(e.target.value)}
+/>
+
+<select
+  className="input"
+  {...register("cuenta_origen_id", {
+    required: "La cuenta origen es obligatoria",
+  })}
+>
+
+  <option value="">
+    Selecciona una cuenta
+  </option>
+
+  {filteredOrigenAccounts.map((account) => (
+
+    <option
+      key={account.id}
+      value={account.id}
+    >
+      {account.tipo} {" | "} {account.user?.nombre} {account.user?.apellido} {" | "} {formatAccountNumber(account.numero_cuenta)}
+    </option>
+
+  ))}
+
+</select>
 
             {errors.cuenta_origen_id && (
               <p className="error">
@@ -108,29 +223,46 @@ export const TransactionModal = ({
             <label className="label">
               Cuenta destino
             </label>
-
             <input
-              type="number"
-              placeholder="Ej: 2"
-              className="input"
-              {...register("cuenta_destino_id", {
-                required: "La cuenta destino es obligatoria",
-                min: {
-                  value: 1,
-                  message: "Debe ser un ID válido",
-                },
-                validate: (value, formValues) =>
-                  value !== formValues.cuenta_origen_id ||
-                  "La cuenta origen y destino no pueden ser iguales",
-              })}
-            />
+  type="text"
+  placeholder="Buscar cuenta..."
+  className="input mb-2"
+  value={searchDestino}
+  onChange={(e) => setSearchDestino(e.target.value)}
+/>
+
+<select
+  className="input"
+  {...register("cuenta_destino_id", {
+    required: "La cuenta destino es obligatoria",
+
+    validate: (value, formValues) =>
+      value !== formValues.cuenta_origen_id ||
+      "La cuenta origen y destino no pueden ser iguales",
+  })}
+>
+
+  <option value="">
+    Selecciona una cuenta
+  </option>
+
+{filteredDestinoAccounts.map((account) => (
+    <option
+      key={account.id}
+      value={account.id}
+    >
+      {account.tipo} {" | "} {account.user?.nombre} {account.user?.apellido} {" | "} {formatAccountNumber(account.numero_cuenta)}
+    </option>
+
+  ))}
+
+</select>
 
             {errors.cuenta_destino_id && (
               <p className="error">
                 {errors.cuenta_destino_id.message}
               </p>
             )}
-
           </div>
 
           {/* MONTO */}

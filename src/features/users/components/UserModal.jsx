@@ -154,6 +154,7 @@ export const UserModal = ({ isOpen, onClose, user }) => {
 
         {/* FORM */}
         <form
+          autoComplete="off"
           onSubmit={handleSubmit(onSubmit)}
           className="
             p-4
@@ -181,7 +182,7 @@ export const UserModal = ({ isOpen, onClose, user }) => {
 
               <input
                 className="input"
-                placeholder="Ej. Kenneth"
+                placeholder="Ej. Juan"
                 {...register("nombre", {
                   required: "El nombre es obligatorio",
                   minLength: {
@@ -211,7 +212,7 @@ export const UserModal = ({ isOpen, onClose, user }) => {
 
               <input
                 className="input"
-                placeholder="Ej. Mazariegos"
+                placeholder="Ej. López"
                 {...register("apellido", {
                   required:
                     "El apellido es obligatorio",
@@ -268,7 +269,7 @@ export const UserModal = ({ isOpen, onClose, user }) => {
 
               <input
                 className="input"
-                placeholder="correo@gmail.com"
+                placeholder="juanlopez@gmail.com"
                 {...register("correo", {
                   required:
                     "El correo es obligatorio",
@@ -298,7 +299,7 @@ export const UserModal = ({ isOpen, onClose, user }) => {
 
               <input
                 className="input"
-                placeholder="98765432"
+                placeholder="12345678"
                 {...register("telefono", {
                   required:
                     "El teléfono es obligatorio",
@@ -361,7 +362,7 @@ export const UserModal = ({ isOpen, onClose, user }) => {
 
               <input
                 className="input"
-                placeholder="Zona 5"
+                placeholder="14 calle A 3-18 zona 8"
                 {...register("direccion", {
                   required:
                     "La dirección es obligatoria",
@@ -427,8 +428,9 @@ export const UserModal = ({ isOpen, onClose, user }) => {
                   </label>
 
                   <input
+                    autoComplete="new-username"
                     className="input"
-                    placeholder="Nombre de usuario"
+                    placeholder="juanperez"
                     {...register("username", {
                       required:
                         "El username es obligatorio",
@@ -460,6 +462,7 @@ export const UserModal = ({ isOpen, onClose, user }) => {
 
                   <input
                     type="password"
+                    autoComplete="new-password"
                     className="input"
                     placeholder="******"
                     {...register("password", {
