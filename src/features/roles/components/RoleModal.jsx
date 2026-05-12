@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { useSaveRole } from "../hooks/useSaveRole";
+import { useFormSubmit } from "../../../shared/hooks/useFormSubmit";
 
 export const RoleModal = ({ isOpen, onClose }) => {
 
@@ -16,21 +17,18 @@ export const RoleModal = ({ isOpen, onClose }) => {
     },
   });
 
+const { handleSubmit: submitWithFeedback } = useFormSubmit();
+
+const onSubmit = (data) =>
+  submitWithFeedback({
+    action: () => saveRole(data),
+    successMsg: "Rol creado",
+    errorMsg: "Error al guardar rol",
+    reset,
+    onClose,
+  });
+
   if (!isOpen) return null;
-
-  const onSubmit = async (data) => {
-    try {
-
-      await saveRole(data);
-
-      reset();
-
-      onClose();
-
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   return (
     <div
@@ -91,9 +89,10 @@ export const RoleModal = ({ isOpen, onClose }) => {
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="
-            p-4 sm:p-6
-            space-y-5
+            p-4
+            sm:p-6
             overflow-y-auto
+            space-y-5
           "
         >
 

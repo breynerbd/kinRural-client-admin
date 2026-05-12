@@ -1,24 +1,11 @@
 import { useEffect, useState } from "react";
-
 import { useUsersStore } from "../store/userStore";
-
 import { UserModal } from "./UserModal";
-
 import { showConfirmToast } from "../../auth/components/ConfirmModal";
-
-import {
-  showError,
-  showSuccess,
-} from "../../../shared/utils/toast";
+import { showError, showSuccess } from "../../../shared/utils/toast";
 
 export const Users = () => {
-
-  const {
-    users,
-    error,
-    getUsers,
-    deleteUser,
-  } = useUsersStore();
+  const { users, getUsers, deleteUser } = useUsersStore();
 
   const [openModal, setOpenModal] = useState(false);
 
@@ -30,62 +17,34 @@ export const Users = () => {
     getUsers();
   }, [getUsers]);
 
-  useEffect(() => {
-
-    if (error) {
-      showError(error);
-    }
-
-  }, [error]);
-
   const filteredUsers = users.filter((user) => {
-
-    const fullName =
-      `${user.nombre} ${user.apellido}`.toLowerCase();
+    const fullName = `${user.nombre} ${user.apellido}`.toLowerCase();
 
     return (
       fullName.includes(search.toLowerCase()) ||
-      user.correo
-        ?.toLowerCase()
-        .includes(search.toLowerCase()) ||
-      user.id
-        ?.toString()
-        .includes(search)
+      user.correo?.toLowerCase().includes(search.toLowerCase()) ||
+      user.id?.toString().includes(search)
     );
-
   });
 
   const handleDelete = (id, nombre) => {
-
     showConfirmToast({
       title: "Eliminar usuario",
       message: `¿Eliminar a ${nombre}?`,
       onConfirm: async () => {
-
         try {
-
           await deleteUser(id);
 
-          showSuccess(
-            "Usuario eliminado correctamente"
-          );
-
+          showSuccess("Usuario eliminado correctamente");
         } catch {
-
-          showError(
-            "Error al eliminar usuario"
-          );
-
+          showError("Error al eliminar usuario");
         }
-
       },
     });
-
   };
 
   return (
     <div className="p-3 sm:p-4 md:p-6">
-
       {/* HEADER */}
       <div
         className="
@@ -99,9 +58,7 @@ export const Users = () => {
           sm:mb-8
         "
       >
-
         <div className="min-w-0">
-
           <h1
             className="
               text-2xl
@@ -124,7 +81,6 @@ export const Users = () => {
           >
             Administra los usuarios registrados
           </p>
-
         </div>
 
         <button
@@ -147,7 +103,6 @@ export const Users = () => {
         >
           + Crear Usuario
         </button>
-
       </div>
 
       {/* SEARCH */}
@@ -162,14 +117,11 @@ export const Users = () => {
           mb-6
         "
       >
-
         <input
           type="text"
           placeholder="Buscar por nombre, correo o ID"
           value={search}
-          onChange={(e) =>
-            setSearch(e.target.value)
-          }
+          onChange={(e) => setSearch(e.target.value)}
           className="
             w-full
             border
@@ -183,7 +135,6 @@ export const Users = () => {
             focus:ring-[#677750]/40
           "
         />
-
       </div>
 
       {/* MODAL */}
@@ -206,7 +157,6 @@ export const Users = () => {
           overflow-hidden
         "
       >
-
         {/* HEADER */}
         <div
           className="
@@ -216,7 +166,6 @@ export const Users = () => {
             border-[#677750]/10
           "
         >
-
           <h2
             className="
               text-base
@@ -238,179 +187,159 @@ export const Users = () => {
           >
             Usuarios registrados en el sistema
           </p>
-
         </div>
 
         {/* MOBILE / TABLET */}
         <div className="block lg:hidden">
-
-          {
-            filteredUsers.length > 0 ? (
-
-              <div
-                className="
+          {filteredUsers.length > 0 ? (
+            <div
+              className="
                   divide-y
                   divide-[#677750]/10
                 "
-              >
-
-                {
-                  filteredUsers.map((user) => (
-
-                    <div
-                      key={user.id}
-                      className="
+            >
+              {filteredUsers.map((user) => (
+                <div
+                  key={user.id}
+                  className="
                         p-4
                         space-y-4
                       "
-                    >
-
-                      {/* USER */}
-                      <div>
-
-                        <p
-                          className="
+                >
+                  {/* USER */}
+                  <div>
+                    <p
+                      className="
                             text-xs
                             text-[#677750]/50
                             mb-1
                           "
-                        >
-                          Usuario
-                        </p>
+                    >
+                      Usuario
+                    </p>
 
-                        <p
-                          className="
+                    <p
+                      className="
                             font-semibold
                             text-[#677750]
                             text-sm
                             sm:text-base
                             break-words
                           "
-                        >
-                          {user.nombre} {user.apellido}
-                        </p>
+                    >
+                      {user.nombre} {user.apellido}
+                    </p>
+                  </div>
 
-                      </div>
-
-                      {/* EMAIL */}
-                      <div>
-
-                        <p
-                          className="
+                  {/* EMAIL */}
+                  <div>
+                    <p
+                      className="
                             text-xs
                             text-[#677750]/50
                             mb-1
                           "
-                        >
-                          Correo
-                        </p>
+                    >
+                      Correo
+                    </p>
 
-                        <p
-                          className="
+                    <p
+                      className="
                             text-sm
                             text-[#677750]/70
                             break-all
                           "
-                        >
-                          {user.correo}
-                        </p>
+                    >
+                      {user.correo}
+                    </p>
+                  </div>
 
-                      </div>
-
-                      {/* INFO */}
-                      <div
-                        className="
+                  {/* INFO */}
+                  <div
+                    className="
                           grid
                           grid-cols-1
                           sm:grid-cols-2
                           gap-3
                         "
+                  >
+                    <div>
+                      <p
+                        className="
+                              text-xs
+                              text-[#677750]/50
+                              mb-1
+                            "
                       >
+                        DPI
+                      </p>
 
-                        <div>
-
-                          <p
-                            className="
-                              text-xs
-                              text-[#677750]/50
-                              mb-1
-                            "
-                          >
-                            DPI
-                          </p>
-
-                          <p
-                            className="
+                      <p
+                        className="
                               text-sm
                               text-[#677750]/70
                             "
-                          >
-                            {user.dpi}
-                          </p>
+                      >
+                        {user.dpi}
+                      </p>
+                    </div>
 
-                        </div>
-
-                        <div>
-
-                          <p
-                            className="
+                    <div>
+                      <p
+                        className="
                               text-xs
                               text-[#677750]/50
                               mb-1
                             "
-                          >
-                            Teléfono
-                          </p>
+                      >
+                        Teléfono
+                      </p>
 
-                          <p
-                            className="
+                      <p
+                        className="
                               text-sm
                               text-[#677750]/70
                             "
-                          >
-                            {user.telefono}
-                          </p>
+                      >
+                        {user.telefono}
+                      </p>
+                    </div>
 
-                        </div>
-
-                        <div>
-
-                          <p
-                            className="
+                    <div>
+                      <p
+                        className="
                               text-xs
                               text-[#677750]/50
                               mb-1
                             "
-                          >
-                            Ingresos
-                          </p>
+                      >
+                        Ingresos
+                      </p>
 
-                          <p
-                            className="
+                      <p
+                        className="
                               text-sm
                               text-green-600
                               font-semibold
                             "
-                          >
-                            Q{user.ingresos_mensuales}
-                          </p>
+                      >
+                        Q{user.ingresos_mensuales}
+                      </p>
+                    </div>
 
-                        </div>
-
-                        <div>
-
-                          <p
-                            className="
+                    <div>
+                      <p
+                        className="
                               text-xs
                               text-[#677750]/50
                               mb-1
                             "
-                          >
-                            Rol
-                          </p>
+                      >
+                        Rol
+                      </p>
 
-                          <span
-                            className="
+                      <span
+                        className="
                               px-2 py-1
                               rounded-full
                               text-xs
@@ -418,55 +347,46 @@ export const Users = () => {
                               bg-blue-100
                               text-blue-700
                             "
-                          >
-                            {
-                              user.role_id === 1
-                                ? "ADMIN"
-                                : "USUARIO"
-                            }
-                          </span>
+                      >
+                        {user.role_id === 1 ? "ADMIN" : "USUARIO"}
+                      </span>
+                    </div>
+                  </div>
 
-                        </div>
-
-                      </div>
-
-                      {/* ADDRESS */}
-                      <div>
-
-                        <p
-                          className="
+                  {/* ADDRESS */}
+                  <div>
+                    <p
+                      className="
                             text-xs
                             text-[#677750]/50
                             mb-1
                           "
-                        >
-                          Dirección
-                        </p>
+                    >
+                      Dirección
+                    </p>
 
-                        <p
-                          className="
+                    <p
+                      className="
                             text-sm
                             text-[#677750]/70
                             break-words
                           "
-                        >
-                          {user.direccion}
-                        </p>
+                    >
+                      {user.direccion}
+                    </p>
+                  </div>
 
-                      </div>
-
-                      {/* ACTIONS */}
-                      <div
-                        className="
+                  {/* ACTIONS */}
+                  <div
+                    className="
                           flex
                           flex-col
                           sm:flex-row
                           gap-2
                         "
-                      >
-
-                        <button
-                          className="
+                  >
+                    <button
+                      className="
                             w-full
                             sm:w-auto
                             px-4 py-2
@@ -477,16 +397,16 @@ export const Users = () => {
                             hover:opacity-90
                             transition
                           "
-                          onClick={() => {
-                            setSelectedUser(user);
-                            setOpenModal(true);
-                          }}
-                        >
-                          Editar
-                        </button>
+                      onClick={() => {
+                        setSelectedUser(user);
+                        setOpenModal(true);
+                      }}
+                    >
+                      Editar
+                    </button>
 
-                        <button
-                          className="
+                    <button
+                      className="
                             w-full
                             sm:w-auto
                             px-4 py-2
@@ -497,46 +417,32 @@ export const Users = () => {
                             hover:bg-red-700
                             transition
                           "
-                          onClick={() =>
-                            handleDelete(
-                              user.id,
-                              `${user.nombre} ${user.apellido}`
-                            )
-                          }
-                        >
-                          Eliminar
-                        </button>
-
-                      </div>
-
-                    </div>
-
-                  ))
-                }
-
-              </div>
-
-            ) : (
-
-              <div
-                className="
+                      onClick={() =>
+                        handleDelete(user.id, `${user.nombre} ${user.apellido}`)
+                      }
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div
+              className="
                   text-center
                   p-6
                   text-sm
                   text-[#677750]/60
                 "
-              >
-                No hay usuarios registrados
-              </div>
-
-            )
-          }
-
+            >
+              No hay usuarios registrados
+            </div>
+          )}
         </div>
 
         {/* DESKTOP TABLE */}
         <div className="hidden lg:block overflow-x-auto">
-
           <table
             className="
               w-full
@@ -544,7 +450,6 @@ export const Users = () => {
               text-sm
             "
           >
-
             <thead
               className="
                 text-left
@@ -554,149 +459,121 @@ export const Users = () => {
                 bg-[#677750]/5
               "
             >
-
               <tr>
+                <th className="p-4 whitespace-nowrap">ID</th>
 
-                <th className="p-4 whitespace-nowrap">
-                  ID
-                </th>
+                <th className="p-4 whitespace-nowrap">Nombre</th>
 
-                <th className="p-4 whitespace-nowrap">
-                  Nombre
-                </th>
+                <th className="p-4 whitespace-nowrap">DPI</th>
 
-                <th className="p-4 whitespace-nowrap">
-                  DPI
-                </th>
+                <th className="p-4 whitespace-nowrap">Correo</th>
 
-                <th className="p-4 whitespace-nowrap">
-                  Correo
-                </th>
+                <th className="p-4 whitespace-nowrap">Teléfono</th>
 
-                <th className="p-4 whitespace-nowrap">
-                  Teléfono
-                </th>
+                <th className="p-4 whitespace-nowrap">Dirección</th>
 
-                <th className="p-4 whitespace-nowrap">
-                  Dirección
-                </th>
+                <th className="p-4 whitespace-nowrap">Ingresos</th>
 
-                <th className="p-4 whitespace-nowrap">
-                  Ingresos
-                </th>
+                <th className="p-4 whitespace-nowrap">Rol</th>
 
-                <th className="p-4 whitespace-nowrap">
-                  Rol
-                </th>
-
-                <th className="p-4 text-center whitespace-nowrap">
-                  Acciones
-                </th>
-
+                <th className="p-4 text-center whitespace-nowrap">Acciones</th>
               </tr>
-
             </thead>
 
             <tbody>
-
-              {
-                filteredUsers.length > 0 ? (
-
-                  filteredUsers.map((user) => (
-
-                    <tr
-                      key={user.id}
-                      className="
+              {filteredUsers.length > 0 ? (
+                filteredUsers.map((user) => (
+                  <tr
+                    key={user.id}
+                    className="
                         border-b
                         border-[#677750]/5
                         hover:bg-[#677750]/5
                         transition
                       "
+                  >
+                    <td
+                      className="
+                          p-4
+                          text-[#677750]
+                          font-medium
+                          whitespace-nowrap
+                        "
                     >
+                      #{user.id}
+                    </td>
 
-                      <td
-                        className="
-                          p-4
-                          text-[#677750]
-                          font-medium
-                          whitespace-nowrap
-                        "
-                      >
-                        #{user.id}
-                      </td>
-
-                      <td
-                        className="
+                    <td
+                      className="
                           p-4
                           font-medium
                           text-[#677750]
                           whitespace-nowrap
                         "
-                      >
-                        {user.nombre} {user.apellido}
-                      </td>
+                    >
+                      {user.nombre} {user.apellido}
+                    </td>
 
-                      <td
-                        className="
+                    <td
+                      className="
                           p-4
                           text-[#677750]/70
                           whitespace-nowrap
                         "
-                      >
-                        {user.dpi}
-                      </td>
+                    >
+                      {user.dpi}
+                    </td>
 
-                      <td
-                        className="
+                    <td
+                      className="
                           p-4
                           text-[#677750]/70
                           break-all
                         "
-                      >
-                        {user.correo}
-                      </td>
+                    >
+                      {user.correo}
+                    </td>
 
-                      <td
-                        className="
+                    <td
+                      className="
                           p-4
                           text-[#677750]/70
                           whitespace-nowrap
                         "
-                      >
-                        {user.telefono}
-                      </td>
+                    >
+                      {user.telefono}
+                    </td>
 
-                      <td
-                        className="
+                    <td
+                      className="
                           p-4
                           text-[#677750]/70
                           min-w-[220px]
                           break-words
                         "
-                      >
-                        {user.direccion}
-                      </td>
+                    >
+                      {user.direccion}
+                    </td>
 
-                      <td
-                        className="
+                    <td
+                      className="
                           p-4
                           text-green-600
                           font-medium
                           whitespace-nowrap
                         "
-                      >
-                        Q{user.ingresos_mensuales}
-                      </td>
+                    >
+                      Q{user.ingresos_mensuales}
+                    </td>
 
-                      <td
-                        className="
+                    <td
+                      className="
                           p-4
                           whitespace-nowrap
                         "
-                      >
-
-                        <span
-                          className="
+                    >
+                      <span
+                        className="
                             px-2 py-1
                             rounded-full
                             text-xs
@@ -704,28 +581,21 @@ export const Users = () => {
                             bg-blue-100
                             text-blue-700
                           "
-                        >
-                          {
-                            user.role_id === 1
-                              ? "ADMIN"
-                              : "USUARIO"
-                          }
-                        </span>
+                      >
+                        {user.role_id === 1 ? "ADMIN" : "USUARIO"}
+                      </span>
+                    </td>
 
-                      </td>
-
-                      <td className="p-4">
-
-                        <div
-                          className="
+                    <td className="p-4">
+                      <div
+                        className="
                             flex
                             gap-2
                             justify-center
                           "
-                        >
-
-                          <button
-                            className="
+                      >
+                        <button
+                          className="
                               px-3 py-1
                               text-xs
                               rounded
@@ -734,16 +604,16 @@ export const Users = () => {
                               hover:opacity-90
                               transition
                             "
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setOpenModal(true);
-                            }}
-                          >
-                            Editar
-                          </button>
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setOpenModal(true);
+                          }}
+                        >
+                          Editar
+                        </button>
 
-                          <button
-                            className="
+                        <button
+                          className="
                               px-3 py-1
                               text-xs
                               rounded
@@ -752,52 +622,37 @@ export const Users = () => {
                               hover:bg-red-700
                               transition
                             "
-                            onClick={() =>
-                              handleDelete(
-                                user.id,
-                                `${user.nombre} ${user.apellido}`
-                              )
-                            }
-                          >
-                            Eliminar
-                          </button>
-
-                        </div>
-
-                      </td>
-
-                    </tr>
-
-                  ))
-
-                ) : (
-
-                  <tr>
-
-                    <td
-                      colSpan="9"
-                      className="
+                          onClick={() =>
+                            handleDelete(
+                              user.id,
+                              `${user.nombre} ${user.apellido}`,
+                            )
+                          }
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="9"
+                    className="
                         text-center
                         p-8
                         text-[#677750]/60
                       "
-                    >
-                      No hay usuarios registrados
-                    </td>
-
-                  </tr>
-
-                )
-              }
-
+                  >
+                    No hay usuarios registrados
+                  </td>
+                </tr>
+              )}
             </tbody>
-
           </table>
-
         </div>
-
       </div>
-
     </div>
   );
 };

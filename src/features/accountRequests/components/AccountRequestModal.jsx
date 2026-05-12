@@ -1,137 +1,92 @@
 import { useSaveAccountRequest } from "../hooks/useSaveAccountRequest";
 import { useAccountRequestStore } from "../store/accountRequestStore";
+import { showSuccess, showError } from "../../../shared/utils/toast";
 
-export const AccountRequestModal = ({
-  isOpen,
-  onClose,
-  request,
-}) => {
+export const AccountRequestModal = ({ isOpen, onClose, request }) => {
+  const { approveAccountRequest, rejectAccountRequest } = useSaveAccountRequest();
 
-  const {
-    handleApprove,
-    handleReject,
-  } = useSaveAccountRequest();
-
-  const actionLoading = useAccountRequestStore(
-    (state) => state.actionLoading
-  );
+  const actionLoading = useAccountRequestStore((state) => state.actionLoading);
 
   if (!isOpen || !request) return null;
 
-  // =========================
-  // ACTIONS
-  // =========================
   const approve = async () => {
-
-    const success = await handleApprove(
-      request.id
-    );
-
-    if (success) {
+    try {
+      await approveAccountRequest(request.id);
+      showSuccess("Solicitud aprobada correctamente");
       onClose();
+    } catch (error) {
+      showError(error.response?.data?.message || "Error al aprobar solicitud");
     }
-
   };
 
   const reject = async () => {
-
-    const success = await handleReject(
-      request.id
-    );
-
-    if (success) {
+    try {
+      await rejectAccountRequest(request.id);
+      showSuccess("Solicitud rechazada correctamente");
       onClose();
+    } catch (error) {
+      showError(error.response?.data?.message || "Error al rechazar solicitud");
     }
-
   };
 
   // =========================
   // STATUS STYLES
   // =========================
   const statusStyles = {
-    PENDIENTE:
-      "bg-yellow-100 text-yellow-700",
+    PENDIENTE: "bg-yellow-100 text-yellow-700",
 
-    APROBADA:
-      "bg-green-100 text-green-700",
+    APROBADA: "bg-green-100 text-green-700",
 
-    RECHAZADA:
-      "bg-red-100 text-red-700",
+    RECHAZADA: "bg-red-100 text-red-700",
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-3">
-
       <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-
         {/* HEADER */}
         <div className="bg-[#677750] p-6 text-white">
-
-          <h2 className="text-2xl font-bold">
-            Gestión de Solicitud
-          </h2>
+          <h2 className="text-2xl font-bold">Gestión de Solicitud</h2>
 
           <p className="text-sm opacity-80">
             Revisa la información del solicitante
           </p>
-
         </div>
 
         {/* CONTENT */}
         <div className="p-6 overflow-y-auto space-y-6">
-
           {/* INFO */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
             {/* FULL NAME */}
             <div>
-              <p className="label">
-                Nombre completo
-              </p>
+              <p className="label">Nombre completo</p>
 
-              <p className="value">
-                {request.fullName}
-              </p>
+              <p className="value">{request.fullName}</p>
             </div>
 
             {/* EMAIL */}
             <div>
-              <p className="label">
-                Correo
-              </p>
+              <p className="label">Correo</p>
 
-              <p className="value">
-                {request.email}
-              </p>
+              <p className="value">{request.email}</p>
             </div>
 
             {/* DPI */}
             <div>
-              <p className="label">
-                DPI
-              </p>
+              <p className="label">DPI</p>
 
-              <p className="value">
-                {request.dpi}
-              </p>
+              <p className="value">{request.dpi}</p>
             </div>
 
             {/* PHONE */}
             <div>
-              <p className="label">
-                Teléfono
-              </p>
+              <p className="label">Teléfono</p>
 
-              <p className="value">
-                {request.phone}
-              </p>
+              <p className="value">{request.phone}</p>
             </div>
 
             {/* ACCOUNT TYPE */}
             <div>
-              <p className="label">
-                Tipo de cuenta
-              </p>
+              <p className="label">Tipo de cuenta</p>
 
               <span
                 className={`
@@ -149,9 +104,7 @@ export const AccountRequestModal = ({
 
             {/* STATUS */}
             <div>
-              <p className="label">
-                Estado
-              </p>
+              <p className="label">Estado</p>
 
               <span
                 className={`
@@ -165,35 +118,23 @@ export const AccountRequestModal = ({
 
             {/* USER ID */}
             <div>
-              <p className="label">
-                Usuario ID
-              </p>
+              <p className="label">Usuario ID</p>
 
-              <p className="value">
-                {request.user_id}
-              </p>
+              <p className="value">{request.user_id}</p>
             </div>
 
             {/* CREATED DATE */}
             <div>
-              <p className="label">
-                Fecha de solicitud
-              </p>
+              <p className="label">Fecha de solicitud</p>
 
               <p className="value">
-                {
-                  new Date(
-                    request.createdAt
-                  ).toLocaleDateString()
-                }
+                {new Date(request.createdAt).toLocaleDateString()}
               </p>
             </div>
-
           </div>
 
           {/* ACTIONS */}
           <div className="pt-5 border-t border-[#677750]/10 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
-
             {/* CLOSE */}
             <button
               onClick={onClose}
@@ -210,10 +151,7 @@ export const AccountRequestModal = ({
             {/* REJECT */}
             <button
               onClick={reject}
-              disabled={
-                actionLoading ||
-                request.status !== "PENDIENTE"
-              }
+              disabled={actionLoading || request.status !== "PENDIENTE"}
               className="
                 px-5 py-2 rounded-lg
                 bg-red-600 text-white
@@ -223,20 +161,13 @@ export const AccountRequestModal = ({
                 disabled:cursor-not-allowed
               "
             >
-              {
-                actionLoading
-                  ? "Procesando..."
-                  : "Rechazar"
-              }
+              {actionLoading ? "Procesando..." : "Rechazar"}
             </button>
 
             {/* APPROVE */}
             <button
               onClick={approve}
-              disabled={
-                actionLoading ||
-                request.status !== "PENDIENTE"
-              }
+              disabled={actionLoading || request.status !== "PENDIENTE"}
               className="
                 px-5 py-2 rounded-lg
                 bg-green-600 text-white
@@ -246,17 +177,10 @@ export const AccountRequestModal = ({
                 disabled:cursor-not-allowed
               "
             >
-              {
-                actionLoading
-                  ? "Procesando..."
-                  : "Aprobar"
-              }
+              {actionLoading ? "Procesando..." : "Aprobar"}
             </button>
-
           </div>
-
         </div>
-
       </div>
 
       {/* STYLES */}
@@ -274,7 +198,6 @@ export const AccountRequestModal = ({
           }
         `}
       </style>
-
     </div>
   );
 };

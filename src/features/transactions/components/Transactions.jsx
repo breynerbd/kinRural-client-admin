@@ -1,34 +1,23 @@
 // src/features/transactions/components/Transactions.jsx
 
 import { useEffect, useMemo, useState } from "react";
-
 import { TransactionModal } from "./TransactionModal";
-
 import { TransactionsStore } from "../store/TransactionsStore";
 
 export const Transactions = () => {
+  const transactions = TransactionsStore((state) => state.transactions);
 
-  const transactions = TransactionsStore(
-    (state) => state.transactions
-  );
-
-  const getTransactions = TransactionsStore(
-    (state) => state.getTransactions
-  );
+  const getTransactions = TransactionsStore((state) => state.getTransactions);
 
   const getTransactionsByAccount = TransactionsStore(
-    (state) => state.getTransactionsByAccount
+    (state) => state.getTransactionsByAccount,
   );
 
-  const isLoading = TransactionsStore(
-    (state) => state.isLoading
-  );
+  const isLoading = TransactionsStore((state) => state.isLoading);
 
-  const [searchAccountId, setSearchAccountId] =
-    useState("");
+  const [searchAccountId, setSearchAccountId] = useState("");
 
-  const [isModalOpen, setIsModalOpen] =
-    useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   /* =========================
      LOAD
@@ -43,36 +32,25 @@ export const Transactions = () => {
   ========================= */
 
   const handleSearch = async () => {
-
     if (!searchAccountId) {
-
       getTransactions();
 
       return;
-
     }
 
-    await getTransactionsByAccount(
-      searchAccountId
-    );
-
+    await getTransactionsByAccount(searchAccountId);
   };
 
   /* =========================
      FILTERED
   ========================= */
 
-  const filteredTransactions =
-    useMemo(() => {
-
-      return transactions;
-
-    }, [transactions]);
+  const filteredTransactions = useMemo(() => {
+    return transactions;
+  }, [transactions]);
 
   return (
-
     <div className="p-3 sm:p-4 md:p-6">
-
       {/* HEADER */}
 
       <div
@@ -87,9 +65,7 @@ export const Transactions = () => {
           sm:mb-8
         "
       >
-
         <div className="min-w-0">
-
           <h1
             className="
               text-2xl
@@ -112,7 +88,6 @@ export const Transactions = () => {
           >
             Administra las transferencias bancarias
           </p>
-
         </div>
 
         <button
@@ -132,7 +107,6 @@ export const Transactions = () => {
         >
           + Nueva Transferencia
         </button>
-
       </div>
 
       {/* SEARCH */}
@@ -148,7 +122,6 @@ export const Transactions = () => {
           mb-6
         "
       >
-
         <div
           className="
             flex
@@ -158,9 +131,7 @@ export const Transactions = () => {
             gap-3
           "
         >
-
           <div className="flex-1 min-w-0">
-
             <label
               className="
                 text-xs
@@ -177,11 +148,7 @@ export const Transactions = () => {
               type="number"
               placeholder="Ej: 1"
               value={searchAccountId}
-              onChange={(e) =>
-                setSearchAccountId(
-                  e.target.value
-                )
-              }
+              onChange={(e) => setSearchAccountId(e.target.value)}
               className="
                 w-full
                 border
@@ -196,7 +163,6 @@ export const Transactions = () => {
                 text-[#677750]
               "
             />
-
           </div>
 
           <div
@@ -209,7 +175,6 @@ export const Transactions = () => {
               md:w-auto
             "
           >
-
             <button
               onClick={handleSearch}
               className="
@@ -229,11 +194,9 @@ export const Transactions = () => {
 
             <button
               onClick={() => {
-
                 setSearchAccountId("");
 
                 getTransactions();
-
               }}
               className="
                 w-full
@@ -250,20 +213,15 @@ export const Transactions = () => {
             >
               Limpiar
             </button>
-
           </div>
-
         </div>
-
       </div>
 
       {/* MODAL */}
 
       <TransactionModal
         isOpen={isModalOpen}
-        onClose={() =>
-          setIsModalOpen(false)
-        }
+        onClose={() => setIsModalOpen(false)}
       />
 
       {/* TABLE */}
@@ -277,7 +235,6 @@ export const Transactions = () => {
           overflow-hidden
         "
       >
-
         {/* TABLE HEADER */}
 
         <div
@@ -288,7 +245,6 @@ export const Transactions = () => {
             border-[#677750]/10
           "
         >
-
           <h2
             className="
               text-base
@@ -310,89 +266,75 @@ export const Transactions = () => {
           >
             Transferencias registradas en el sistema
           </p>
-
         </div>
 
         {/* MOBILE / TABLET */}
 
         <div className="block lg:hidden">
-
-          {
-            isLoading ? (
-
-              <div
-                className="
+          {isLoading ? (
+            <div
+              className="
                   text-center
                   p-6
                   text-sm
                   text-[#677750]/60
                 "
-              >
-                Cargando transacciones...
-              </div>
-
-            ) : filteredTransactions.length > 0 ? (
-
-              <div
-                className="
+            >
+              Cargando transacciones...
+            </div>
+          ) : filteredTransactions.length > 0 ? (
+            <div
+              className="
                   divide-y
                   divide-[#677750]/10
                 "
-              >
-
-                {
-                  filteredTransactions.map(
-                    (transaction) => (
-
-                      <div
-                        key={transaction.id}
-                        className="
+            >
+              {filteredTransactions.map((transaction) => (
+                <div
+                  key={transaction.id}
+                  className="
                           p-4
                           space-y-4
                         "
-                      >
+                >
+                  {/* ID */}
 
-                        {/* ID */}
-
-                        <div>
-
-                          <p
-                            className="
+                  <div>
+                    <p
+                      className="
                               text-xs
                               text-[#677750]/50
                               mb-1
                             "
-                          >
-                            ID
-                          </p>
+                    >
+                      ID
+                    </p>
 
-                          <p
-                            className="
+                    <p
+                      className="
                               font-semibold
                               text-[#677750]
                               text-sm
                               sm:text-base
                               break-words
                             "
-                          >
-                            #{transaction.id}
-                          </p>
+                    >
+                      #{transaction.id}
+                    </p>
+                  </div>
 
-                        </div>
+                  {/* TYPE + AMOUNT */}
 
-                        {/* TYPE + AMOUNT */}
-
-                        <div
-                          className="
+                  <div
+                    className="
                             flex
                             flex-wrap
                             items-center
                             gap-3
                           "
-                        >
-
-                          <span
-                            className="
+                  >
+                    <span
+                      className="
                               px-2 py-1
                               rounded-full
                               text-xs
@@ -400,145 +342,114 @@ export const Transactions = () => {
                               bg-[#677750]/10
                               text-[#677750]
                             "
-                          >
-                            {transaction.tipo}
-                          </span>
+                    >
+                      {transaction.tipo}
+                    </span>
 
-                          <span
-                            className="
+                    <span
+                      className="
                               text-green-600
                               font-semibold
                               text-sm
                             "
-                          >
-                            Q{transaction.monto}
-                          </span>
+                    >
+                      Q{transaction.monto}
+                    </span>
+                  </div>
 
-                        </div>
+                  {/* DETAILS */}
 
-                        {/* DETAILS */}
-
-                        <div
-                          className="
+                  <div
+                    className="
                             grid
                             grid-cols-1
                             sm:grid-cols-2
                             gap-3
                           "
-                        >
-
-                          <div>
-
-                            <p
-                              className="
+                  >
+                    <div>
+                      <p
+                        className="
                                 text-xs
                                 text-[#677750]/50
                                 mb-1
                               "
-                            >
-                              Cuenta Origen
-                            </p>
+                      >
+                        Cuenta Origen
+                      </p>
 
-                            <p
-                              className="
+                      <p
+                        className="
                                 text-sm
                                 text-[#677750]/70
                               "
-                            >
-                              #
-                              {
-                                transaction
-                                  .cuenta_origen_id
-                              }
-                            </p>
+                      >
+                        #{transaction.cuenta_origen_id}
+                      </p>
+                    </div>
 
-                          </div>
-
-                          <div>
-
-                            <p
-                              className="
+                    <div>
+                      <p
+                        className="
                                 text-xs
                                 text-[#677750]/50
                                 mb-1
                               "
-                            >
-                              Cuenta Destino
-                            </p>
+                      >
+                        Cuenta Destino
+                      </p>
 
-                            <p
-                              className="
+                      <p
+                        className="
                                 text-sm
                                 text-[#677750]/70
                               "
-                            >
-                              #
-                              {
-                                transaction
-                                  .cuenta_destino_id
-                              }
-                            </p>
+                      >
+                        #{transaction.cuenta_destino_id}
+                      </p>
+                    </div>
 
-                          </div>
-
-                          <div
-                            className="
+                    <div
+                      className="
                               sm:col-span-2
                             "
-                          >
-
-                            <p
-                              className="
+                    >
+                      <p
+                        className="
                                 text-xs
                                 text-[#677750]/50
                                 mb-1
                               "
-                            >
-                              Fecha
-                            </p>
+                      >
+                        Fecha
+                      </p>
 
-                            <p
-                              className="
+                      <p
+                        className="
                                 text-sm
                                 text-[#677750]/70
                                 break-words
                               "
-                            >
-                              {
-                                new Date(
-                                  transaction.createdAt
-                                ).toLocaleDateString()
-                              }
-                            </p>
-
-                          </div>
-
-                        </div>
-
-                      </div>
-
-                    )
-                  )
-                }
-
-              </div>
-
-            ) : (
-
-              <div
-                className="
+                      >
+                        {new Date(transaction.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div
+              className="
                   text-center
                   p-6
                   text-sm
                   text-[#677750]/60
                 "
-              >
-                No hay transacciones disponibles
-              </div>
-
-            )
-          }
-
+            >
+              No hay transacciones disponibles
+            </div>
+          )}
         </div>
 
         {/* DESKTOP TABLE */}
@@ -550,7 +461,6 @@ export const Transactions = () => {
             overflow-x-auto
           "
         >
-
           <table
             className="
               w-full
@@ -558,7 +468,6 @@ export const Transactions = () => {
               min-w-[900px]
             "
           >
-
             <thead
               className="
                 text-left
@@ -567,86 +476,59 @@ export const Transactions = () => {
                 border-[#677750]/10
               "
             >
-
               <tr>
+                <th className="p-4">ID</th>
 
-                <th className="p-4">
-                  ID
-                </th>
+                <th className="p-4">Tipo</th>
 
-                <th className="p-4">
-                  Tipo
-                </th>
+                <th className="p-4">Cuenta Origen</th>
 
-                <th className="p-4">
-                  Cuenta Origen
-                </th>
+                <th className="p-4">Cuenta Destino</th>
 
-                <th className="p-4">
-                  Cuenta Destino
-                </th>
+                <th className="p-4">Monto</th>
 
-                <th className="p-4">
-                  Monto
-                </th>
-
-                <th className="p-4">
-                  Fecha
-                </th>
-
+                <th className="p-4">Fecha</th>
               </tr>
-
             </thead>
 
             <tbody>
-
-              {
-                isLoading ? (
-
-                  <tr>
-
-                    <td
-                      colSpan="6"
-                      className="
+              {isLoading ? (
+                <tr>
+                  <td
+                    colSpan="6"
+                    className="
                         text-center
                         p-6
                         text-[#677750]/60
                       "
-                    >
-                      Cargando transacciones...
-                    </td>
-
-                  </tr>
-
-                ) : filteredTransactions.length > 0 ? (
-
-                  filteredTransactions.map(
-                    (transaction) => (
-
-                      <tr
-                        key={transaction.id}
-                        className="
+                  >
+                    Cargando transacciones...
+                  </td>
+                </tr>
+              ) : filteredTransactions.length > 0 ? (
+                filteredTransactions.map((transaction) => (
+                  <tr
+                    key={transaction.id}
+                    className="
                           border-b
                           border-[#677750]/5
                           hover:bg-[#fffaf2]/50
                           transition
                         "
-                      >
-
-                        <td
-                          className="
+                  >
+                    <td
+                      className="
                             p-4
                             font-medium
                             text-[#677750]
                           "
-                        >
-                          #{transaction.id}
-                        </td>
+                    >
+                      #{transaction.id}
+                    </td>
 
-                        <td className="p-4">
-
-                          <span
-                            className="
+                    <td className="p-4">
+                      <span
+                        className="
                               px-2 py-1
                               rounded-full
                               text-xs
@@ -654,96 +536,67 @@ export const Transactions = () => {
                               bg-[#677750]/10
                               text-[#677750]
                             "
-                          >
-                            {transaction.tipo}
-                          </span>
+                      >
+                        {transaction.tipo}
+                      </span>
+                    </td>
 
-                        </td>
-
-                        <td
-                          className="
+                    <td
+                      className="
                             p-4
                             text-[#677750]/70
                           "
-                        >
-                          #
-                          {
-                            transaction
-                              .cuenta_origen_id
-                          }
-                        </td>
+                    >
+                      #{transaction.cuenta_origen_id}
+                    </td>
 
-                        <td
-                          className="
+                    <td
+                      className="
                             p-4
                             text-[#677750]/70
                           "
-                        >
-                          #
-                          {
-                            transaction
-                              .cuenta_destino_id
-                          }
-                        </td>
+                    >
+                      #{transaction.cuenta_destino_id}
+                    </td>
 
-                        <td
-                          className="
+                    <td
+                      className="
                             p-4
                             text-green-600
                             font-semibold
                           "
-                        >
-                          Q{transaction.monto}
-                        </td>
+                    >
+                      Q{transaction.monto}
+                    </td>
 
-                        <td
-                          className="
+                    <td
+                      className="
                             p-4
                             text-[#677750]/60
                           "
-                        >
-                          {
-                            new Date(
-                              transaction.createdAt
-                            ).toLocaleDateString()
-                          }
-                        </td>
-
-                      </tr>
-
-                    )
-                  )
-
-                ) : (
-
-                  <tr>
-
-                    <td
-                      colSpan="6"
-                      className="
+                    >
+                      {new Date(transaction.createdAt).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="6"
+                    className="
                         text-center
                         p-6
                         text-[#677750]/60
                       "
-                    >
-                      No hay transacciones disponibles
-                    </td>
-
-                  </tr>
-
-                )
-              }
-
+                  >
+                    No hay transacciones disponibles
+                  </td>
+                </tr>
+              )}
             </tbody>
-
           </table>
-
         </div>
-
       </div>
-
     </div>
-
   );
-
 };

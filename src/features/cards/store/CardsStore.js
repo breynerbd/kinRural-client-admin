@@ -1,150 +1,63 @@
 import { create } from "zustand";
-import {
-  getCards,
-  updateCardStatus,
-  activateCard,
-  blockCard,
-} from "../../../shared/api";
-
-import toast from "react-hot-toast";
+import { getCards, updateCardStatus, activateCard, blockCard } from "../../../shared/api";
 
 export const CardsStore = create((set) => ({
-
   cards: [],
   isLoading: false,
 
-  /* =========================
-     GET ALL
-  ========================= */
-
   getCards: async () => {
     try {
-
       set({ isLoading: true });
-
       const { data } = await getCards();
-
-      set({
-        cards: data,
-        isLoading: false,
-      });
-
+      set({ cards: data, isLoading: false });
     } catch (error) {
-
-      set({ isLoading: false });
-
-      toast.error(
-        error?.response?.data?.message ||
-        "Error al obtener tarjetas"
-      );
+      set({ loading: false });
+      throw error;
     }
   },
-
-  /* =========================
-     APPROVE / REJECT
-  ========================= */
 
   approveCard: async (id, action) => {
     try {
-
-      const { data } = await updateCardStatus(
-        id,
-        { action }
-      );
-
+      const { data } = await updateCardStatus(id, { action });
       set((state) => ({
         cards: state.cards.map((card) =>
-          card.id === id
-            ? {
-                ...card,
-                estado: action,
-              }
-            : card
+          card.id === id ? { ...card, estado: action } : card
         ),
       }));
-
       return data;
-
     } catch (error) {
-
-      toast.error(
-        error?.response?.data?.message ||
-        "Error al procesar tarjeta"
-      );
-
+      set({ loading: false });
       throw error;
     }
   },
-
-  /* =========================
-     ACTIVATE
-  ========================= */
 
   activateCard: async (id) => {
     try {
-
       const { data } = await activateCard(id);
-
       set((state) => ({
         cards: state.cards.map((card) =>
-          card.id === id
-            ? {
-                ...card,
-                estado: "ACTIVA",
-              }
-            : card
+          card.id === id ? { ...card, estado: "ACTIVA" } : card
         ),
       }));
-
       return data;
-
     } catch (error) {
-
-      toast.error(
-        error?.response?.data?.message ||
-        "Error al activar tarjeta"
-      );
-
+      set({ loading: false });
       throw error;
     }
   },
-
-  /* =========================
-     BLOCK
-  ========================= */
 
   blockCard: async (id) => {
     try {
-
-      const { data } = await blockCard(
-        id,
-        {
-          action: "BLOQUEADA",
-        }
-      );
-
+      const { data } = await blockCard(id, { action: "BLOQUEADA" });
       set((state) => ({
         cards: state.cards.map((card) =>
-          card.id === id
-            ? {
-                ...card,
-                estado: "BLOQUEADA",
-              }
-            : card
+          card.id === id ? { ...card, estado: "BLOQUEADA" } : card
         ),
       }));
-
       return data;
-
     } catch (error) {
-
-      toast.error(
-        error?.response?.data?.message ||
-        "Error al bloquear tarjeta"
-      );
-
+      set({ loading: false });
       throw error;
     }
   },
-
 }));

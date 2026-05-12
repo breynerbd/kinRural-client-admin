@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-
 import { LoanModal } from "./LoanModal.jsx";
-
 import { useLoanStore } from "../store/loanStore";
+import { showSuccess, showError } from "../../../shared/utils/toast";
 
 export const Loans = () => {
   const [selectedLoan, setSelectedLoan] = useState(null);
@@ -15,7 +13,6 @@ export const Loans = () => {
   const {
     loans,
     loading,
-    error,
     getLoans,
     getLoanById,
     approveLoan,
@@ -34,11 +31,6 @@ export const Loans = () => {
   // =========================
   // ERROR TOAST
   // =========================
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
-    }
-  }, [error]);
 
   // =========================
   // FILTER
@@ -46,21 +38,6 @@ export const Loans = () => {
   const filteredLoans = loans.filter((loan) =>
     searchId === "" ? true : loan.id.toString() === searchId,
   );
-
-  // =========================
-  // OPEN MODAL
-  // =========================
-  const openModal = async (loanId) => {
-    try {
-      const loan = await getLoanById(loanId);
-
-      setSelectedLoan(loan);
-
-      setIsModalOpen(true);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   // =========================
   // CLOSE MODAL
@@ -71,59 +48,56 @@ export const Loans = () => {
     setIsModalOpen(false);
   };
 
-  // =========================
-  // APPROVE
-  // =========================
   const handleApprove = async (id) => {
     try {
       await approveLoan(id);
-
       await getLoans();
-    } catch (error) {
-      console.error(error);
+      showSuccess("Préstamo aprobado correctamente");
+    } catch {
+      showError("Error al aprobar préstamo");
     }
   };
 
-  // =========================
-  // REJECT
-  // =========================
   const handleReject = async (id) => {
     try {
       await rejectLoan(id);
-
       await getLoans();
-    } catch (error) {
-      console.error(error);
+      showSuccess("Préstamo rechazado");
+    } catch {
+      showError("Error al rechazar préstamo");
     }
   };
 
-  // =========================
-  // PAY INSTALLMENT
-  // =========================
   const handlePay = async (installmentId) => {
     try {
       await payLoanInstallment(installmentId);
-
       if (selectedLoan?.id) {
         const updatedLoan = await getLoanById(selectedLoan.id);
-
         setSelectedLoan(updatedLoan);
       }
-
       await getLoans();
-    } catch (error) {
-      console.error(error);
+      showSuccess("Cuota pagada correctamente");
+    } catch {
+      showError("Error al pagar cuota");
     }
   };
 
-  // =========================
-  // CHECK MORA
-  // =========================
   const handleCheckMora = async () => {
     try {
       await checkLoanMora();
-    } catch (error) {
-      console.error(error);
+      showSuccess("Mora actualizada correctamente");
+    } catch {
+      showError("Error al verificar mora");
+    }
+  };
+
+  const openModal = async (loanId) => {
+    try {
+      const loan = await getLoanById(loanId);
+      setSelectedLoan(loan);
+      setIsModalOpen(true);
+    } catch {
+      showError("Error al cargar préstamo");
     }
   };
 
@@ -455,13 +429,13 @@ export const Loans = () => {
 
                     {/* DETAILS */}
                     <div
-  className="
+                      className="
     grid
     grid-cols-1
     sm:grid-cols-2
     gap-3
   "
->
+                    >
                       <div>
                         <p
                           className="

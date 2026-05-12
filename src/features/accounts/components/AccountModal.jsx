@@ -1,14 +1,11 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-
 import { useSaveAccount } from "../hooks/useSaveAccount";
 import { useUsersStore } from "../../users/store/userStore";
 import { useAccountStore } from "../store/accountStore";
-
-import { showSuccess, showError } from "../../../shared/utils/toast";
+import { useFormSubmit } from "../../../shared/hooks/useFormSubmit";
 
 export const AccountModal = ({ isOpen, onClose }) => {
-
   const {
     register,
     handleSubmit,
@@ -20,52 +17,32 @@ export const AccountModal = ({ isOpen, onClose }) => {
 
   const { users, getUsers } = useUsersStore();
 
-  const loading = useAccountStore(
-    (state) => state.loading
-  );
+  const loading = useAccountStore((state) => state.loading);
 
   useEffect(() => {
     getUsers(1);
   }, [getUsers]);
 
   useEffect(() => {
-
     if (isOpen) {
-
       reset({
         tipo: "",
         saldo: "",
         user_id: "",
       });
-
     }
-
   }, [isOpen, reset]);
 
-  const onSubmit = async (data) => {
+const { handleSubmit: submitWithFeedback } = useFormSubmit();
 
-    try {
-
-      await saveAccount(data);
-
-      showSuccess(
-        "Cuenta creada correctamente"
-      );
-
-      reset();
-
-      onClose();
-
-    } catch (error) {
-
-      showError(
-        error.response?.data?.message ||
-        "Error al guardar cuenta"
-      );
-
-    }
-
-  };
+const onSubmit = (data) =>
+  submitWithFeedback({
+    action: () => saveAccount(data),
+    successMsg: "Cuenta creada correctamente",
+    errorMsg: "Error al guardar cuenta",
+    reset,
+    onClose,
+  });
 
   if (!isOpen) return null;
 
@@ -78,7 +55,6 @@ export const AccountModal = ({ isOpen, onClose }) => {
         p-2 sm:p-4
       "
     >
-
       <div
         className="
           bg-white
@@ -93,7 +69,6 @@ export const AccountModal = ({ isOpen, onClose }) => {
           overflow-hidden
         "
       >
-
         {/* HEADER */}
         <div
           className="
@@ -104,7 +79,6 @@ export const AccountModal = ({ isOpen, onClose }) => {
             bg-[#677750]
           "
         >
-
           <h2
             className="
               text-xl
@@ -126,7 +100,6 @@ export const AccountModal = ({ isOpen, onClose }) => {
           >
             Completa la información de la cuenta
           </p>
-
         </div>
 
         {/* FORM */}
@@ -139,7 +112,6 @@ export const AccountModal = ({ isOpen, onClose }) => {
             space-y-5
           "
         >
-
           <div
             className="
               grid
@@ -148,52 +120,29 @@ export const AccountModal = ({ isOpen, onClose }) => {
               gap-4
             "
           >
-
             {/* TIPO */}
             <div className="flex flex-col min-w-0">
-
-              <label className="label">
-                Tipo de cuenta
-              </label>
+              <label className="label">Tipo de cuenta</label>
 
               <select
                 className="input"
                 {...register("tipo", {
-                  required:
-                    "El tipo de cuenta es obligatorio",
+                  required: "El tipo de cuenta es obligatorio",
                 })}
               >
+                <option value="">Seleccione tipo</option>
 
-                <option value="">
-                  Seleccione tipo
-                </option>
+                <option value="AHORRO">AHORRO</option>
 
-                <option value="AHORRO">
-                  AHORRO
-                </option>
-
-                <option value="MONETARIA">
-                  MONETARIA
-                </option>
-
+                <option value="MONETARIA">MONETARIA</option>
               </select>
 
-              {
-                errors.tipo && (
-                  <p className="error">
-                    {errors.tipo.message}
-                  </p>
-                )
-              }
-
+              {errors.tipo && <p className="error">{errors.tipo.message}</p>}
             </div>
 
             {/* SALDO */}
             <div className="flex flex-col min-w-0">
-
-              <label className="label">
-                Saldo inicial
-              </label>
+              <label className="label">Saldo inicial</label>
 
               <input
                 type="number"
@@ -201,24 +150,15 @@ export const AccountModal = ({ isOpen, onClose }) => {
                 className="input"
                 placeholder="Q1500"
                 {...register("saldo", {
-                  required:
-                    "El saldo es obligatorio",
+                  required: "El saldo es obligatorio",
                   min: {
                     value: 1,
-                    message:
-                      "El saldo debe ser mayor a Q0",
+                    message: "El saldo debe ser mayor a Q0",
                   },
                 })}
               />
 
-              {
-                errors.saldo && (
-                  <p className="error">
-                    {errors.saldo.message}
-                  </p>
-                )
-              }
-
+              {errors.saldo && <p className="error">{errors.saldo.message}</p>}
             </div>
 
             {/* USER */}
@@ -229,46 +169,27 @@ export const AccountModal = ({ isOpen, onClose }) => {
                 min-w-0
               "
             >
-
-              <label className="label">
-                Usuario
-              </label>
+              <label className="label">Usuario</label>
 
               <select
                 className="input"
                 {...register("user_id", {
-                  required:
-                    "El usuario es obligatorio",
+                  required: "El usuario es obligatorio",
                 })}
               >
+                <option value="">Seleccione usuario</option>
 
-                <option value="">
-                  Seleccione usuario
-                </option>
-
-                {
-                  users.map((user) => (
-                    <option
-                      key={user.id}
-                      value={user.id}
-                    >
-                      {user.nombre} {user.apellido}
-                    </option>
-                  ))
-                }
-
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.nombre} {user.apellido}
+                  </option>
+                ))}
               </select>
 
-              {
-                errors.user_id && (
-                  <p className="error">
-                    {errors.user_id.message}
-                  </p>
-                )
-              }
-
+              {errors.user_id && (
+                <p className="error">{errors.user_id.message}</p>
+              )}
             </div>
-
           </div>
 
           {/* BOTONES */}
@@ -284,15 +205,12 @@ export const AccountModal = ({ isOpen, onClose }) => {
               border-[#677750]/10
             "
           >
-
             <button
               type="button"
               onClick={() => {
-
                 reset();
 
                 onClose();
-
               }}
               className="
                 w-full
@@ -330,17 +248,10 @@ export const AccountModal = ({ isOpen, onClose }) => {
                 disabled:cursor-not-allowed
               "
             >
-              {
-                loading
-                  ? "Guardando..."
-                  : "Crear cuenta"
-              }
+              {loading ? "Guardando..." : "Crear cuenta"}
             </button>
-
           </div>
-
         </form>
-
       </div>
 
       {/* ESTILOS */}
@@ -404,7 +315,6 @@ export const AccountModal = ({ isOpen, onClose }) => {
           }
         `}
       </style>
-
     </div>
   );
 };

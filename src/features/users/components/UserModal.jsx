@@ -1,13 +1,10 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-
 import { useUsersStore } from "../store/userStore";
 import { useSaveUser } from "../hooks/useSaveUser";
-
-import { showSuccess, showError } from "../../../shared/utils/toast";
+import { useFormSubmit } from "../../../shared/hooks/useFormSubmit";
 
 export const UserModal = ({ isOpen, onClose, user }) => {
-
   const {
     register,
     handleSubmit,
@@ -17,16 +14,11 @@ export const UserModal = ({ isOpen, onClose, user }) => {
 
   const { saveUser } = useSaveUser();
 
-  const loading = useUsersStore(
-    (state) => state.loading
-  );
+  const loading = useUsersStore((state) => state.loading);
 
   useEffect(() => {
-
     if (isOpen) {
-
       if (user) {
-
         reset({
           nombre: user.nombre,
           apellido: user.apellido,
@@ -37,9 +29,7 @@ export const UserModal = ({ isOpen, onClose, user }) => {
           ingresos_mensuales: user.ingresos_mensuales,
           role_id: user.role_id,
         });
-
       } else {
-
         reset({
           nombre: "",
           apellido: "",
@@ -52,39 +42,20 @@ export const UserModal = ({ isOpen, onClose, user }) => {
           username: "",
           password: "",
         });
-
       }
-
     }
-
   }, [isOpen, user, reset]);
 
-  const onSubmit = async (data) => {
+  const { handleSubmit: submitWithFeedback } = useFormSubmit();
 
-    try {
-
-      await saveUser(data, user?.id);
-
-      showSuccess(
-        user
-          ? "Usuario actualizado correctamente"
-          : "Usuario creado correctamente",
-      );
-
-      reset();
-
-      onClose();
-
-    } catch (error) {
-
-      showError(
-        error.response?.data?.message ||
-        "Error al guardar usuario"
-      );
-
-    }
-
-  };
+  const onSubmit = (data) =>
+    submitWithFeedback({
+      action: () => saveUser(data, user?.id),
+      successMsg: user ? "Usuario actualizado" : "Usuario creado",
+      errorMsg: "Error al guardar usuario",
+      reset,
+      onClose,
+    });
 
   if (!isOpen) return null;
 
@@ -97,7 +68,6 @@ export const UserModal = ({ isOpen, onClose, user }) => {
         p-2 sm:p-4
       "
     >
-
       <div
         className="
           bg-white
@@ -112,7 +82,6 @@ export const UserModal = ({ isOpen, onClose, user }) => {
           overflow-hidden
         "
       >
-
         {/* HEADER */}
         <div
           className="
@@ -123,7 +92,6 @@ export const UserModal = ({ isOpen, onClose, user }) => {
             bg-[#677750]
           "
         >
-
           <h2
             className="
               text-xl
@@ -132,11 +100,7 @@ export const UserModal = ({ isOpen, onClose, user }) => {
               break-words
             "
           >
-            {
-              user
-                ? "Editar Usuario"
-                : "Nuevo Usuario"
-            }
+            {user ? "Editar Usuario" : "Nuevo Usuario"}
           </h2>
 
           <p
@@ -149,7 +113,6 @@ export const UserModal = ({ isOpen, onClose, user }) => {
           >
             Completa la información del usuario
           </p>
-
         </div>
 
         {/* FORM */}
@@ -163,7 +126,6 @@ export const UserModal = ({ isOpen, onClose, user }) => {
             space-y-5
           "
         >
-
           <div
             className="
               grid
@@ -172,13 +134,9 @@ export const UserModal = ({ isOpen, onClose, user }) => {
               gap-4
             "
           >
-
             {/* NOMBRE */}
             <div className="flex flex-col min-w-0">
-
-              <label className="label">
-                Nombre
-              </label>
+              <label className="label">Nombre</label>
 
               <input
                 className="input"
@@ -187,92 +145,61 @@ export const UserModal = ({ isOpen, onClose, user }) => {
                   required: "El nombre es obligatorio",
                   minLength: {
                     value: 2,
-                    message:
-                      "Debe tener al menos 2 caracteres",
+                    message: "Debe tener al menos 2 caracteres",
                   },
                 })}
               />
 
-              {
-                errors.nombre && (
-                  <p className="error">
-                    {errors.nombre.message}
-                  </p>
-                )
-              }
-
+              {errors.nombre && (
+                <p className="error">{errors.nombre.message}</p>
+              )}
             </div>
 
             {/* APELLIDO */}
             <div className="flex flex-col min-w-0">
-
-              <label className="label">
-                Apellido
-              </label>
+              <label className="label">Apellido</label>
 
               <input
                 className="input"
                 placeholder="Ej. López"
                 {...register("apellido", {
-                  required:
-                    "El apellido es obligatorio",
+                  required: "El apellido es obligatorio",
                 })}
               />
 
-              {
-                errors.apellido && (
-                  <p className="error">
-                    {errors.apellido.message}
-                  </p>
-                )
-              }
-
+              {errors.apellido && (
+                <p className="error">{errors.apellido.message}</p>
+              )}
             </div>
 
             {/* DPI */}
             <div className="flex flex-col min-w-0">
-
-              <label className="label">
-                DPI
-              </label>
+              <label className="label">DPI</label>
 
               <input
                 className="input"
                 placeholder="1234567890101"
                 {...register("dpi", {
-                  required:
-                    "El DPI es obligatorio",
+                  required: "El DPI es obligatorio",
                   pattern: {
                     value: /^[0-9]{13}$/,
-                    message:
-                      "El DPI debe tener exactamente 13 dígitos",
+                    message: "El DPI debe tener exactamente 13 dígitos",
                   },
                 })}
               />
 
-              {
-                errors.dpi && (
-                  <p className="error">
-                    {errors.dpi.message}
-                  </p>
-                )
-              }
-
+              {errors.dpi && <p className="error">{errors.dpi.message}</p>}
             </div>
 
             {/* CORREO */}
             <div className="flex flex-col min-w-0">
-
-              <label className="label">
-                Correo
-              </label>
+              <label className="label">Correo</label>
 
               <input
                 className="input"
                 placeholder="juanlopez@gmail.com"
                 {...register("correo", {
-                  required:
-                    "El correo es obligatorio",
+                  required: "El correo es obligatorio",
                   pattern: {
                     value: /^\S+@\S+$/i,
                     message: "Correo inválido",
@@ -280,56 +207,38 @@ export const UserModal = ({ isOpen, onClose, user }) => {
                 })}
               />
 
-              {
-                errors.correo && (
-                  <p className="error">
-                    {errors.correo.message}
-                  </p>
-                )
-              }
-
+              {errors.correo && (
+                <p className="error">{errors.correo.message}</p>
+              )}
             </div>
 
             {/* TELEFONO */}
             <div className="flex flex-col min-w-0">
-
-              <label className="label">
-                Teléfono
-              </label>
+              <label className="label">Teléfono</label>
 
               <input
                 className="input"
                 placeholder="12345678"
                 {...register("telefono", {
-                  required:
-                    "El teléfono es obligatorio",
+                  required: "El teléfono es obligatorio",
                 })}
               />
 
-              {
-                errors.telefono && (
-                  <p className="error">
-                    {errors.telefono.message}
-                  </p>
-                )
-              }
-
+              {errors.telefono && (
+                <p className="error">{errors.telefono.message}</p>
+              )}
             </div>
 
             {/* INGRESOS */}
             <div className="flex flex-col min-w-0">
-
-              <label className="label">
-                Ingresos mensuales
-              </label>
+              <label className="label">Ingresos mensuales</label>
 
               <input
                 type="number"
                 className="input"
                 placeholder="Q8000"
                 {...register("ingresos_mensuales", {
-                  required:
-                    "Los ingresos son obligatorios",
+                  required: "Los ingresos son obligatorios",
                   min: {
                     value: 100,
                     message: "Mínimo Q100",
@@ -337,14 +246,9 @@ export const UserModal = ({ isOpen, onClose, user }) => {
                 })}
               />
 
-              {
-                errors.ingresos_mensuales && (
-                  <p className="error">
-                    {errors.ingresos_mensuales.message}
-                  </p>
-                )
-              }
-
+              {errors.ingresos_mensuales && (
+                <p className="error">{errors.ingresos_mensuales.message}</p>
+              )}
             </div>
 
             {/* DIRECCION */}
@@ -355,96 +259,61 @@ export const UserModal = ({ isOpen, onClose, user }) => {
                 min-w-0
               "
             >
-
-              <label className="label">
-                Dirección
-              </label>
+              <label className="label">Dirección</label>
 
               <input
                 className="input"
                 placeholder="14 calle A 3-18 zona 8"
                 {...register("direccion", {
-                  required:
-                    "La dirección es obligatoria",
+                  required: "La dirección es obligatoria",
                 })}
               />
 
-              {
-                errors.direccion && (
-                  <p className="error">
-                    {errors.direccion.message}
-                  </p>
-                )
-              }
-
+              {errors.direccion && (
+                <p className="error">{errors.direccion.message}</p>
+              )}
             </div>
 
             {/* ROL */}
             <div className="flex flex-col min-w-0">
-
-              <label className="label">
-                Rol
-              </label>
+              <label className="label">Rol</label>
 
               <select
                 className="input"
                 {...register("role_id", {
-                  required:
-                    "El rol es obligatorio",
+                  required: "El rol es obligatorio",
                 })}
               >
+                <option value="">Seleccione un rol</option>
 
-                <option value="">
-                  Seleccione un rol
-                </option>
+                <option value="1">Admin</option>
 
-                <option value="1">
-                  Admin
-                </option>
-
-                <option value="2">
-                  Usuario
-                </option>
-
+                <option value="2">Usuario</option>
               </select>
 
-              {
-                errors.role_id && (
-                  <p className="error">
-                    {errors.role_id.message}
-                  </p>
-                )
-              }
-
+              {errors.role_id && (
+                <p className="error">{errors.role_id.message}</p>
+              )}
             </div>
 
             {!user && (
               <>
                 {/* USERNAME */}
                 <div className="flex flex-col min-w-0">
-
-                  <label className="label">
-                    Username
-                  </label>
+                  <label className="label">Username</label>
 
                   <input
                     autoComplete="new-username"
                     className="input"
                     placeholder="juanperez"
                     {...register("username", {
-                      required:
-                        "El username es obligatorio",
+                      required: "El username es obligatorio",
                     })}
                   />
 
-                  {
-                    errors.username && (
-                      <p className="error">
-                        {errors.username.message}
-                      </p>
-                    )
-                  }
-
+                  {errors.username && (
+                    <p className="error">{errors.username.message}</p>
+                  )}
                 </div>
 
                 {/* PASSWORD */}
@@ -455,10 +324,7 @@ export const UserModal = ({ isOpen, onClose, user }) => {
                     min-w-0
                   "
                 >
-
-                  <label className="label">
-                    Password
-                  </label>
+                  <label className="label">Password</label>
 
                   <input
                     type="password"
@@ -466,28 +332,20 @@ export const UserModal = ({ isOpen, onClose, user }) => {
                     className="input"
                     placeholder="******"
                     {...register("password", {
-                      required:
-                        "La contraseña es obligatoria",
+                      required: "La contraseña es obligatoria",
                       minLength: {
-                        value: 6,
-                        message:
-                          "Debe tener al menos 6 caracteres",
+                        value: 8,
+                        message: "Debe tener al menos 8 caracteres",
                       },
                     })}
                   />
 
-                  {
-                    errors.password && (
-                      <p className="error">
-                        {errors.password.message}
-                      </p>
-                    )
-                  }
-
+                  {errors.password && (
+                    <p className="error">{errors.password.message}</p>
+                  )}
                 </div>
               </>
             )}
-
           </div>
 
           {/* BOTONES */}
@@ -503,15 +361,12 @@ export const UserModal = ({ isOpen, onClose, user }) => {
               border-[#677750]/10
             "
           >
-
             <button
               type="button"
               onClick={() => {
-
                 reset();
 
                 onClose();
-
               }}
               className="
                 w-full
@@ -549,19 +404,14 @@ export const UserModal = ({ isOpen, onClose, user }) => {
                 disabled:cursor-not-allowed
               "
             >
-              {
-                loading
-                  ? "Guardando..."
-                  : user
-                    ? "Guardar cambios"
-                    : "Crear usuario"
-              }
+              {loading
+                ? "Guardando..."
+                : user
+                  ? "Guardar cambios"
+                  : "Crear usuario"}
             </button>
-
           </div>
-
         </form>
-
       </div>
 
       {/* ESTILOS */}
@@ -625,7 +475,6 @@ export const UserModal = ({ isOpen, onClose, user }) => {
           }
         `}
       </style>
-
     </div>
   );
 };

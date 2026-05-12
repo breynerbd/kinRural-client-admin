@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { showError } from "../../../shared/utils/toast";
 
 export const LoanModal = ({
   isOpen,
@@ -8,126 +9,84 @@ export const LoanModal = ({
   onReject,
   onPay,
 }) => {
-
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
   if (!isOpen || !loan) return null;
 
-  const handleApprove = async () => {
+const handleApprove = async () => {
+  try {
+    setLoading(true);
+    await onApprove(loan.id);
+    onClose();
+  } catch {
+    showError("Error al aprobar préstamo");
+  } finally {
+    setLoading(false);
+  }
+};
 
-    try {
+const handleReject = async () => {
+  try {
+    setLoading(true);
+    await onReject(loan.id);
+    onClose();
+  } catch {
+    showError("Error al rechazar préstamo");
+  } finally {
+    setLoading(false);
+  }
+};
 
-      setLoading(true);
-
-      await onApprove(loan.id);
-
-      onClose();
-
-    } catch (error) {
-
-      console.error(error);
-
-    } finally {
-
-      setLoading(false);
-
-    }
-
-  };
-
-  const handleReject = async () => {
-
-    try {
-
-      setLoading(true);
-
-      await onReject(loan.id);
-
-      onClose();
-
-    } catch (error) {
-
-      console.error(error);
-
-    } finally {
-
-      setLoading(false);
-
-    }
-
-  };
-
-  const handlePay = async (installmentId) => {
-
-    try {
-
-      setLoading(true);
-
-      await onPay(installmentId);
-
-      onClose();
-
-    } catch (error) {
-
-      console.error(error);
-
-    } finally {
-
-      setLoading(false);
-
-    }
-
+const handlePay = async (installmentId) => {
+  try {
+    setLoading(true);
+    await onPay(installmentId);
+    onClose();
+  } catch {
+    showError("Error al pagar cuota");
+  } finally {
+    setLoading(false);
+  }
   };
 
   const getStatusConfig = (status) => {
-
     switch (status) {
-
       case "PENDING":
         return {
           label: "PENDIENTE",
-          className:
-            "bg-yellow-100 text-yellow-700",
+          className: "bg-yellow-100 text-yellow-700",
         };
 
       case "ACTIVE":
         return {
           label: "ACTIVO",
-          className:
-            "bg-green-100 text-green-700",
+          className: "bg-green-100 text-green-700",
         };
 
       case "DELINQUENT":
         return {
           label: "MOROSO",
-          className:
-            "bg-red-100 text-red-700",
+          className: "bg-red-100 text-red-700",
         };
 
       case "CLOSED":
         return {
           label: "CERRADO",
-          className:
-            "bg-gray-200 text-gray-700",
+          className: "bg-gray-200 text-gray-700",
         };
 
       case "REJECTED":
         return {
           label: "RECHAZADO",
-          className:
-            "bg-red-100 text-red-700",
+          className: "bg-red-100 text-red-700",
         };
 
       default:
         return {
           label: "DESCONOCIDO",
-          className:
-            "bg-gray-100 text-gray-600",
+          className: "bg-gray-100 text-gray-600",
         };
-
     }
-
   };
 
   return (
@@ -139,7 +98,6 @@ export const LoanModal = ({
         p-2 sm:p-4
       "
     >
-
       <div
         className="
           bg-white
@@ -153,7 +111,6 @@ export const LoanModal = ({
           overflow-hidden
         "
       >
-
         {/* HEADER */}
 
         <div
@@ -163,7 +120,6 @@ export const LoanModal = ({
             bg-[#677750]
           "
         >
-
           <h2
             className="
               text-xl sm:text-2xl
@@ -183,7 +139,6 @@ export const LoanModal = ({
           >
             Gestión completa del préstamo
           </p>
-
         </div>
 
         {/* CONTENT */}
@@ -196,7 +151,6 @@ export const LoanModal = ({
             space-y-6
           "
         >
-
           {/* INFO */}
 
           <div
@@ -208,7 +162,6 @@ export const LoanModal = ({
               gap-4 sm:gap-5
             "
           >
-
             <div
               className="
                 bg-[#f9fafb]
@@ -218,7 +171,6 @@ export const LoanModal = ({
                 min-w-0
               "
             >
-
               <p
                 className="
                   text-xs
@@ -237,8 +189,7 @@ export const LoanModal = ({
                   break-words
                 "
               >
-                {loan.user?.nombre}{" "}
-                {loan.user?.apellido}
+                {loan.user?.nombre} {loan.user?.apellido}
               </p>
 
               <p
@@ -250,7 +201,6 @@ export const LoanModal = ({
               >
                 {loan.user?.correo}
               </p>
-
             </div>
 
             <div
@@ -261,7 +211,6 @@ export const LoanModal = ({
                 border border-[#677750]/10
               "
             >
-
               <p
                 className="
                   text-xs
@@ -290,7 +239,6 @@ export const LoanModal = ({
               >
                 {loan.account?.tipo}
               </p>
-
             </div>
 
             <div
@@ -301,7 +249,6 @@ export const LoanModal = ({
                 border border-[#677750]/10
               "
             >
-
               <p
                 className="
                   text-xs
@@ -313,11 +260,7 @@ export const LoanModal = ({
               </p>
 
               {(() => {
-
-                const statusConfig =
-                  getStatusConfig(
-                    loan.estado
-                  );
+                const statusConfig = getStatusConfig(loan.estado);
 
                 return (
                   <span
@@ -334,11 +277,8 @@ export const LoanModal = ({
                     {statusConfig.label}
                   </span>
                 );
-
               })()}
-
             </div>
-
           </div>
 
           {/* FINANCIAL INFO */}
@@ -352,7 +292,6 @@ export const LoanModal = ({
               gap-4
             "
           >
-
             <div
               className="
                 border border-[#677750]/10
@@ -360,7 +299,6 @@ export const LoanModal = ({
                 p-4
               "
             >
-
               <p
                 className="
                   text-xs
@@ -380,7 +318,6 @@ export const LoanModal = ({
               >
                 Q{loan.monto}
               </p>
-
             </div>
 
             <div
@@ -390,7 +327,6 @@ export const LoanModal = ({
                 p-4
               "
             >
-
               <p
                 className="
                   text-xs
@@ -409,7 +345,6 @@ export const LoanModal = ({
               >
                 {loan.tasa_interes}%
               </p>
-
             </div>
 
             <div
@@ -419,7 +354,6 @@ export const LoanModal = ({
                 p-4
               "
             >
-
               <p
                 className="
                   text-xs
@@ -439,7 +373,6 @@ export const LoanModal = ({
               >
                 Q{loan.cuota_mensual || 0}
               </p>
-
             </div>
 
             <div
@@ -449,7 +382,6 @@ export const LoanModal = ({
                 p-4
               "
             >
-
               <p
                 className="
                   text-xs
@@ -469,15 +401,12 @@ export const LoanModal = ({
               >
                 Q{loan.saldo_pendiente || 0}
               </p>
-
             </div>
-
           </div>
 
           {/* INSTALLMENTS */}
 
           <div>
-
             <div
               className="
                 flex
@@ -488,7 +417,6 @@ export const LoanModal = ({
                 mb-4
               "
             >
-
               <h3
                 className="
                   text-base sm:text-lg
@@ -498,188 +426,124 @@ export const LoanModal = ({
               >
                 Cuotas
               </h3>
-
             </div>
 
             {/* MOBILE */}
 
             <div className="block lg:hidden space-y-4">
-
-              {
-                loan.loan_installments?.length > 0 ? (
-
-                  loan.loan_installments.map(
-                    (installment) => (
-
-                      <div
-                        key={installment.id}
-                        className="
+              {loan.loan_installments?.length > 0 ? (
+                loan.loan_installments.map((installment) => (
+                  <div
+                    key={installment.id}
+                    className="
                           border border-[#677750]/10
                           rounded-xl
                           p-4
                           space-y-3
                         "
-                      >
-
-                        <div
-                          className="
+                  >
+                    <div
+                      className="
                             flex
                             justify-between
                             items-start
                             gap-3
                           "
-                        >
-
-                          <div>
-
-                            <p
-                              className="
+                    >
+                      <div>
+                        <p
+                          className="
                                 text-xs
                                 text-gray-500
                               "
-                            >
-                              Cuota
-                            </p>
+                        >
+                          Cuota
+                        </p>
 
-                            <p
-                              className="
+                        <p
+                          className="
                                 font-semibold
                                 text-[#677750]
                               "
-                            >
-                              #
-                              {
-                                installment.numero_cuota
-                              }
-                            </p>
+                        >
+                          #{installment.numero_cuota}
+                        </p>
+                      </div>
 
-                          </div>
-
-                          <span
-                            className={`
+                      <span
+                        className={`
                               px-2 py-1
                               rounded-full
                               text-xs
                               font-medium
                               ${
-                                installment.estado ===
-                                "PAGADA"
+                                installment.estado === "PAGADA"
                                   ? "bg-green-100 text-green-700"
-                                  : installment.estado ===
-                                      "EN_MORA"
+                                  : installment.estado === "EN_MORA"
                                     ? "bg-red-100 text-red-700"
                                     : "bg-yellow-100 text-yellow-700"
                               }
                             `}
-                          >
-                            {
-                              installment.estado ===
-                              "PAGADA"
-                                ? "PAGADA"
-                                : installment.estado ===
-                                    "EN_MORA"
-                                  ? "EN MORA"
-                                  : "PENDIENTE"
-                            }
-                          </span>
+                      >
+                        {installment.estado === "PAGADA"
+                          ? "PAGADA"
+                          : installment.estado === "EN_MORA"
+                            ? "EN MORA"
+                            : "PENDIENTE"}
+                      </span>
+                    </div>
 
-                        </div>
-
-                        <div
-                          className="
+                    <div
+                      className="
                             grid
                             grid-cols-2
                             gap-3
                             text-sm
                           "
-                        >
+                    >
+                      <div>
+                        <p className="text-gray-500 text-xs">Vencimiento</p>
 
-                          <div>
+                        <p>
+                          {new Date(
+                            installment.fecha_vencimiento,
+                          ).toLocaleDateString()}
+                        </p>
+                      </div>
 
-                            <p className="text-gray-500 text-xs">
-                              Vencimiento
-                            </p>
+                      <div>
+                        <p className="text-gray-500 text-xs">Cuota</p>
 
-                            <p>
-                              {
-                                new Date(
-                                  installment.fecha_vencimiento
-                                ).toLocaleDateString()
-                              }
-                            </p>
+                        <p className="text-green-600 font-medium">
+                          Q{installment.monto_cuota}
+                        </p>
+                      </div>
 
-                          </div>
+                      <div>
+                        <p className="text-gray-500 text-xs">Capital</p>
 
-                          <div>
+                        <p>Q{installment.capital}</p>
+                      </div>
 
-                            <p className="text-gray-500 text-xs">
-                              Cuota
-                            </p>
+                      <div>
+                        <p className="text-gray-500 text-xs">Interés</p>
 
-                            <p className="text-green-600 font-medium">
-                              Q
-                              {
-                                installment.monto_cuota
-                              }
-                            </p>
+                        <p>Q{installment.interes}</p>
+                      </div>
 
-                          </div>
+                      <div className="col-span-2">
+                        <p className="text-gray-500 text-xs">Mora</p>
 
-                          <div>
+                        <p className="text-red-600">
+                          Q{installment.mora_acumulada}
+                        </p>
+                      </div>
+                    </div>
 
-                            <p className="text-gray-500 text-xs">
-                              Capital
-                            </p>
-
-                            <p>
-                              Q
-                              {installment.capital}
-                            </p>
-
-                          </div>
-
-                          <div>
-
-                            <p className="text-gray-500 text-xs">
-                              Interés
-                            </p>
-
-                            <p>
-                              Q
-                              {installment.interes}
-                            </p>
-
-                          </div>
-
-                          <div className="col-span-2">
-
-                            <p className="text-gray-500 text-xs">
-                              Mora
-                            </p>
-
-                            <p className="text-red-600">
-                              Q
-                              {
-                                installment.mora_acumulada
-                              }
-                            </p>
-
-                          </div>
-
-                        </div>
-
-                        <button
-                          onClick={() =>
-                            handlePay(
-                              installment.id
-                            )
-                          }
-                          disabled={
-                            loading ||
-                            installment.estado ===
-                              "PAGADA"
-                          }
-                          className="
+                    <button
+                      onClick={() => handlePay(installment.id)}
+                      disabled={loading || installment.estado === "PAGADA"}
+                      className="
                             w-full
                             px-4 py-2
                             rounded-lg
@@ -689,19 +553,14 @@ export const LoanModal = ({
                             hover:bg-blue-700
                             disabled:opacity-50
                           "
-                        >
-                          Pagar
-                        </button>
-
-                      </div>
-
-                    )
-                  )
-
-                ) : (
-
-                  <div
-                    className="
+                    >
+                      Pagar
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div
+                  className="
                       text-center
                       p-5
                       border border-[#677750]/10
@@ -709,13 +568,10 @@ export const LoanModal = ({
                       text-[#677750]/60
                       text-sm
                     "
-                  >
-                    No hay cuotas generadas
-                  </div>
-
-                )
-              }
-
+                >
+                  No hay cuotas generadas
+                </div>
+              )}
             </div>
 
             {/* DESKTOP TABLE */}
@@ -728,9 +584,7 @@ export const LoanModal = ({
                 rounded-xl
               "
             >
-
               <table className="w-full text-sm min-w-[1000px]">
-
                 <thead
                   className="
                     bg-[#f9fafb]
@@ -738,161 +592,97 @@ export const LoanModal = ({
                     text-[#677750]/70
                   "
                 >
-
                   <tr>
+                    <th className="p-3">#</th>
 
-                    <th className="p-3">
-                      #
-                    </th>
+                    <th className="p-3">Vencimiento</th>
 
-                    <th className="p-3">
-                      Vencimiento
-                    </th>
+                    <th className="p-3">Cuota</th>
 
-                    <th className="p-3">
-                      Cuota
-                    </th>
+                    <th className="p-3">Capital</th>
 
-                    <th className="p-3">
-                      Capital
-                    </th>
+                    <th className="p-3">Interés</th>
 
-                    <th className="p-3">
-                      Interés
-                    </th>
+                    <th className="p-3">Mora</th>
 
-                    <th className="p-3">
-                      Mora
-                    </th>
+                    <th className="p-3">Estado</th>
 
-                    <th className="p-3">
-                      Estado
-                    </th>
-
-                    <th className="p-3 text-center">
-                      Acciones
-                    </th>
-
+                    <th className="p-3 text-center">Acciones</th>
                   </tr>
-
                 </thead>
 
                 <tbody>
-
-                  {
-                    loan.loan_installments
-                      ?.length > 0 ? (
-
-                      loan.loan_installments.map(
-                        (installment) => (
-
-                          <tr
-                            key={installment.id}
-                            className="
+                  {loan.loan_installments?.length > 0 ? (
+                    loan.loan_installments.map((installment) => (
+                      <tr
+                        key={installment.id}
+                        className="
                               border-t
                               border-[#677750]/5
                             "
-                          >
+                      >
+                        <td className="p-3">{installment.numero_cuota}</td>
 
-                            <td className="p-3">
-                              {
-                                installment.numero_cuota
-                              }
-                            </td>
+                        <td className="p-3">
+                          {new Date(
+                            installment.fecha_vencimiento,
+                          ).toLocaleDateString()}
+                        </td>
 
-                            <td className="p-3">
-                              {
-                                new Date(
-                                  installment.fecha_vencimiento
-                                ).toLocaleDateString()
-                              }
-                            </td>
-
-                            <td
-                              className="
+                        <td
+                          className="
                                 p-3
                                 text-green-600
                                 font-medium
                               "
-                            >
-                              Q
-                              {
-                                installment.monto_cuota
-                              }
-                            </td>
+                        >
+                          Q{installment.monto_cuota}
+                        </td>
 
-                            <td className="p-3">
-                              Q
-                              {
-                                installment.capital
-                              }
-                            </td>
+                        <td className="p-3">Q{installment.capital}</td>
 
-                            <td className="p-3">
-                              Q
-                              {
-                                installment.interes
-                              }
-                            </td>
+                        <td className="p-3">Q{installment.interes}</td>
 
-                            <td
-                              className="
+                        <td
+                          className="
                                 p-3
                                 text-red-600
                               "
-                            >
-                              Q
-                              {
-                                installment.mora_acumulada
-                              }
-                            </td>
+                        >
+                          Q{installment.mora_acumulada}
+                        </td>
 
-                            <td className="p-3">
-
-                              <span
-                                className={`
+                        <td className="p-3">
+                          <span
+                            className={`
                                   px-2 py-1
                                   rounded-full
                                   text-xs
                                   font-medium
                                   ${
-                                    installment.estado ===
-                                    "PAGADA"
+                                    installment.estado === "PAGADA"
                                       ? "bg-green-100 text-green-700"
-                                      : installment.estado ===
-                                          "EN_MORA"
+                                      : installment.estado === "EN_MORA"
                                         ? "bg-red-100 text-red-700"
                                         : "bg-yellow-100 text-yellow-700"
                                   }
                                 `}
-                              >
-                                {
-                                  installment.estado ===
-                                  "PAGADA"
-                                    ? "PAGADA"
-                                    : installment.estado ===
-                                        "EN_MORA"
-                                      ? "EN MORA"
-                                      : "PENDIENTE"
-                                }
-                              </span>
+                          >
+                            {installment.estado === "PAGADA"
+                              ? "PAGADA"
+                              : installment.estado === "EN_MORA"
+                                ? "EN MORA"
+                                : "PENDIENTE"}
+                          </span>
+                        </td>
 
-                            </td>
-
-                            <td className="p-3 text-center">
-
-                              <button
-                                onClick={() =>
-                                  handlePay(
-                                    installment.id
-                                  )
-                                }
-                                disabled={
-                                  loading ||
-                                  installment.estado ===
-                                    "PAGADA"
-                                }
-                                className="
+                        <td className="p-3 text-center">
+                          <button
+                            onClick={() => handlePay(installment.id)}
+                            disabled={
+                              loading || installment.estado === "PAGADA"
+                            }
+                            className="
                                   px-3 py-1
                                   rounded-lg
                                   bg-blue-600
@@ -901,45 +691,30 @@ export const LoanModal = ({
                                   hover:bg-blue-700
                                   disabled:opacity-50
                                 "
-                              >
-                                Pagar
-                              </button>
-
-                            </td>
-
-                          </tr>
-
-                        )
-                      )
-
-                    ) : (
-
-                      <tr>
-
-                        <td
-                          colSpan="8"
-                          className="
+                          >
+                            Pagar
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan="8"
+                        className="
                             text-center
                             p-5
                             text-[#677750]/60
                           "
-                        >
-                          No hay cuotas generadas
-                        </td>
-
-                      </tr>
-
-                    )
-                  }
-
+                      >
+                        No hay cuotas generadas
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
-
               </table>
-
             </div>
-
           </div>
-
         </div>
 
         {/* FOOTER */}
@@ -955,7 +730,6 @@ export const LoanModal = ({
             gap-3
           "
         >
-
           <button
             onClick={onClose}
             className="
@@ -973,10 +747,7 @@ export const LoanModal = ({
 
           <button
             onClick={handleReject}
-            disabled={
-              loading ||
-              loan.estado !== "PENDING"
-            }
+            disabled={loading || loan.estado !== "PENDING"}
             className="
               w-full sm:w-auto
               px-5 py-2
@@ -992,10 +763,7 @@ export const LoanModal = ({
 
           <button
             onClick={handleApprove}
-            disabled={
-              loading ||
-              loan.estado !== "PENDING"
-            }
+            disabled={loading || loan.estado !== "PENDING"}
             className="
               w-full sm:w-auto
               px-5 py-2
@@ -1008,11 +776,8 @@ export const LoanModal = ({
           >
             Aprobar
           </button>
-
         </div>
-
       </div>
-
     </div>
   );
 };

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useSaveCard } from "../hooks/useSaveCard";
+import { showSuccess, showError } from "../../../shared/utils/toast";
+
 
 export const CardModal = ({
   isOpen,
@@ -10,11 +12,8 @@ export const CardModal = ({
   const [loading, setLoading] =
     useState(false);
 
-  const {
-    handleAction,
-    handleActivate,
-    handleBlock,
-  } = useSaveCard();
+const { approveCard, activateCard, blockCard } = useSaveCard();
+
 
   if (!isOpen || !card) return null;
 
@@ -23,63 +22,56 @@ export const CardModal = ({
   ========================= */
 
   const onApprove = async () => {
-
+  try {
     setLoading(true);
-
-    const ok = await handleAction(
-      card.id,
-      "APROBADA"
-    );
-
+    await approveCard(card.id, "APROBADA");
+    showSuccess("Tarjeta aprobada");
+    onClose();
+  } catch (error) {
+    showError(error?.response?.data?.message || "Error al procesar tarjeta");
+  } finally {
     setLoading(false);
+  }
+};
 
-    if (ok) onClose();
-
-  };
-
-  const onReject = async () => {
-
+const onReject = async () => {
+  try {
     setLoading(true);
-
-    const ok = await handleAction(
-      card.id,
-      "RECHAZADA"
-    );
-
+    await approveCard(card.id, "RECHAZADA");
+    showSuccess("Tarjeta rechazada");
+    onClose();
+  } catch (error) {
+    showError(error?.response?.data?.message || "Error al procesar tarjeta");
+  } finally {
     setLoading(false);
+  }
+};
 
-    if (ok) onClose();
-
-  };
-
-  const onActivateCard = async () => {
-
+const onActivateCard = async () => {
+  try {
     setLoading(true);
-
-    const ok = await handleActivate(
-      card.id
-    );
-
+    await activateCard(card.id);
+    showSuccess("Tarjeta activada");
+    onClose();
+  } catch (error) {
+    showError(error?.response?.data?.message || "Error al activar tarjeta");
+  } finally {
     setLoading(false);
+  }
+};
 
-    if (ok) onClose();
-
-  };
-
-  const onBlockCard = async () => {
-
+const onBlockCard = async () => {
+  try {
     setLoading(true);
-
-    const ok = await handleBlock(
-      card.id
-    );
-
+    await blockCard(card.id);
+    showSuccess("Tarjeta bloqueada");
+    onClose();
+  } catch (error) {
+    showError(error?.response?.data?.message || "Error al bloquear tarjeta");
+  } finally {
     setLoading(false);
-
-    if (ok) onClose();
-
-  };
-
+  }
+};
   /* =========================
      HELPERS
   ========================= */

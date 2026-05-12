@@ -1,27 +1,15 @@
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
-
 import { AccountModal } from "./AccountModal.jsx";
-
 import { useAccountStore } from "../store/accountStore";
-
 import { showConfirmToast } from "../../auth/components/ConfirmModal.jsx";
+import { showError, showSuccess } from "../../../shared/utils/toast";
 
 export const Accounts = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [isModalOpen, setIsModalOpen] =
-    useState(false);
+  const [searchId, setSearchId] = useState("");
 
-  const [searchId, setSearchId] =
-    useState("");
-
-  const {
-    accounts,
-    getAccounts,
-    deleteAccount,
-    loading,
-    error,
-  } = useAccountStore();
+  const { accounts, getAccounts, deleteAccount, loading } = useAccountStore();
 
   // ================= MODAL =================
   const openModal = () => {
@@ -37,55 +25,30 @@ export const Accounts = () => {
     getAccounts(1);
   }, [getAccounts]);
 
-  // ================= ERROR =================
-  useEffect(() => {
-
-    if (error) {
-      toast.error(error);
-    }
-
-  }, [error]);
-
   // ================= FILTRO =================
-  const filteredAccounts = accounts.filter(
-    (account) =>
-      searchId === ""
-        ? true
-        : account.id.toString() === searchId,
+  const filteredAccounts = accounts.filter((account) =>
+    searchId === "" ? true : account.id.toString() === searchId,
   );
 
   // ================= DELETE =================
   const handleDelete = (id) => {
-
     showConfirmToast({
       title: "Eliminar cuenta",
       message: "¿Deseas eliminar esta cuenta?",
       onConfirm: async () => {
-
         try {
-
           await deleteAccount(id);
 
-          toast.success(
-            "Cuenta eliminada correctamente"
-          );
-
-        } catch (error) {
-
-          toast.error(
-            error.response?.data?.message ||
-            "Error al eliminar cuenta",
-          );
-
+          showSuccess("Cuenta eliminada correctamente");
+        } catch {
+          showError("Error al eliminar cuenta");
         }
       },
     });
-
   };
 
   return (
     <div className="p-3 sm:p-4 md:p-6">
-
       {/* HEADER */}
       <div
         className="
@@ -99,9 +62,7 @@ export const Accounts = () => {
           sm:mb-8
         "
       >
-
         <div className="min-w-0">
-
           <h1
             className="
               text-2xl
@@ -124,7 +85,6 @@ export const Accounts = () => {
           >
             Administra las cuentas del sistema
           </p>
-
         </div>
 
         <button
@@ -144,7 +104,6 @@ export const Accounts = () => {
         >
           + Crear Cuenta
         </button>
-
       </div>
 
       {/* SEARCH */}
@@ -159,7 +118,6 @@ export const Accounts = () => {
           mb-6
         "
       >
-
         <div
           className="
             flex
@@ -169,9 +127,7 @@ export const Accounts = () => {
             gap-3
           "
         >
-
           <div className="flex-1 min-w-0">
-
             <label
               className="
                 text-xs
@@ -188,9 +144,7 @@ export const Accounts = () => {
               type="number"
               placeholder="Ej: 1"
               value={searchId}
-              onChange={(e) =>
-                setSearchId(e.target.value)
-              }
+              onChange={(e) => setSearchId(e.target.value)}
               className="
                 w-full
                 border
@@ -205,7 +159,6 @@ export const Accounts = () => {
                 text-[#677750]
               "
             />
-
           </div>
 
           <div
@@ -218,7 +171,6 @@ export const Accounts = () => {
               md:w-auto
             "
           >
-
             <button
               onClick={() => setSearchId("")}
               className="
@@ -236,18 +188,12 @@ export const Accounts = () => {
             >
               Limpiar
             </button>
-
           </div>
-
         </div>
-
       </div>
 
       {/* MODAL */}
-      <AccountModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-      />
+      <AccountModal isOpen={isModalOpen} onClose={closeModal} />
 
       {/* TABLE */}
       <div
@@ -259,7 +205,6 @@ export const Accounts = () => {
           overflow-hidden
         "
       >
-
         {/* TABLE HEADER */}
         <div
           className="
@@ -269,7 +214,6 @@ export const Accounts = () => {
             border-[#677750]/10
           "
         >
-
           <h2
             className="
               text-base
@@ -291,67 +235,56 @@ export const Accounts = () => {
           >
             Cuentas registradas en el sistema
           </p>
-
         </div>
 
         {/* MOBILE / TABLET */}
         <div className="block lg:hidden">
-
-          {
-            filteredAccounts.length > 0 ? (
-
-              <div className="divide-y divide-[#677750]/10">
-
-                {
-                  filteredAccounts.map((account) => (
-
-                    <div
-                      key={account.id}
-                      className="
+          {filteredAccounts.length > 0 ? (
+            <div className="divide-y divide-[#677750]/10">
+              {filteredAccounts.map((account) => (
+                <div
+                  key={account.id}
+                  className="
                         p-4
                         space-y-4
                       "
-                    >
-
-                      {/* ACCOUNT NUMBER */}
-                      <div>
-
-                        <p
-                          className="
+                >
+                  {/* ACCOUNT NUMBER */}
+                  <div>
+                    <p
+                      className="
                             text-xs
                             text-[#677750]/50
                             mb-1
                           "
-                        >
-                          Número
-                        </p>
+                    >
+                      Número
+                    </p>
 
-                        <p
-                          className="
+                    <p
+                      className="
                             font-semibold
                             text-[#677750]
                             text-sm
                             sm:text-base
                             break-words
                           "
-                        >
-                          {account.numero_cuenta}
-                        </p>
+                    >
+                      {account.numero_cuenta}
+                    </p>
+                  </div>
 
-                      </div>
-
-                      {/* TYPE + BALANCE */}
-                      <div
-                        className="
+                  {/* TYPE + BALANCE */}
+                  <div
+                    className="
                           flex
                           flex-wrap
                           items-center
                           gap-3
                         "
-                      >
-
-                        <span
-                          className={`
+                  >
+                    <span
+                      className={`
                             px-2 py-1
                             rounded-full
                             text-xs
@@ -362,52 +295,47 @@ export const Accounts = () => {
                                 : "bg-blue-100 text-blue-700"
                             }
                           `}
-                        >
-                          {account.tipo}
-                        </span>
+                    >
+                      {account.tipo}
+                    </span>
 
-                        <span
-                          className="
+                    <span
+                      className="
                             text-green-600
                             font-semibold
                             text-sm
                           "
-                        >
-                          Q{account.saldo}
-                        </span>
+                    >
+                      Q{account.saldo}
+                    </span>
+                  </div>
 
-                      </div>
-
-                      {/* USER */}
-                      <div>
-
-                        <p
-                          className="
+                  {/* USER */}
+                  <div>
+                    <p
+                      className="
                             text-xs
                             text-[#677750]/50
                             mb-1
                           "
-                        >
-                          Usuario ID
-                        </p>
+                    >
+                      Usuario ID
+                    </p>
 
-                        <p
-                          className="
+                    <p
+                      className="
                             text-sm
                             text-[#677750]/70
                           "
-                        >
-                          #{account.user_id}
-                        </p>
+                    >
+                      #{account.user_id}
+                    </p>
+                  </div>
 
-                      </div>
-
-                      {/* ACTION */}
-                      <button
-                        onClick={() =>
-                          handleDelete(account.id)
-                        }
-                        className="
+                  {/* ACTION */}
+                  <button
+                    onClick={() => handleDelete(account.id)}
+                    className="
                           w-full
                           sm:w-auto
                           px-4 py-2
@@ -418,42 +346,28 @@ export const Accounts = () => {
                           hover:bg-red-700
                           transition
                         "
-                      >
-                        Eliminar
-                      </button>
-
-                    </div>
-
-                  ))
-                }
-
-              </div>
-
-            ) : (
-
-              <div
-                className="
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div
+              className="
                   text-center
                   p-6
                   text-sm
                   text-[#677750]/60
                 "
-              >
-                {
-                  loading
-                    ? "Cargando cuentas..."
-                    : "No se encontraron cuentas"
-                }
-              </div>
-
-            )
-          }
-
+            >
+              {loading ? "Cargando cuentas..." : "No se encontraron cuentas"}
+            </div>
+          )}
         </div>
 
         {/* DESKTOP TABLE */}
         <div className="hidden lg:block overflow-x-auto">
-
           <table
             className="
               w-full
@@ -461,7 +375,6 @@ export const Accounts = () => {
               min-w-[800px]
             "
           >
-
             <thead
               className="
                 text-left
@@ -470,65 +383,45 @@ export const Accounts = () => {
                 border-[#677750]/10
               "
             >
-
               <tr>
+                <th className="p-4">Número</th>
 
-                <th className="p-4">
-                  Número
-                </th>
+                <th className="p-4">Tipo</th>
 
-                <th className="p-4">
-                  Tipo
-                </th>
+                <th className="p-4">Saldo</th>
 
-                <th className="p-4">
-                  Saldo
-                </th>
+                <th className="p-4">Usuario ID</th>
 
-                <th className="p-4">
-                  Usuario ID
-                </th>
-
-                <th className="p-4 text-center">
-                  Acciones
-                </th>
-
+                <th className="p-4 text-center">Acciones</th>
               </tr>
-
             </thead>
 
             <tbody>
-
-              {
-                filteredAccounts.length > 0 ? (
-
-                  filteredAccounts.map((account) => (
-
-                    <tr
-                      key={account.id}
-                      className="
+              {filteredAccounts.length > 0 ? (
+                filteredAccounts.map((account) => (
+                  <tr
+                    key={account.id}
+                    className="
                         border-b
                         border-[#677750]/5
                         hover:bg-[#fffaf2]/50
                         transition
                       "
-                    >
-
-                      <td
-                        className="
+                  >
+                    <td
+                      className="
                           p-4
                           font-medium
                           text-[#677750]
                           break-words
                         "
-                      >
-                        {account.numero_cuenta}
-                      </td>
+                    >
+                      {account.numero_cuenta}
+                    </td>
 
-                      <td className="p-4">
-
-                        <span
-                          className={`
+                    <td className="p-4">
+                      <span
+                        className={`
                             px-2 py-1
                             rounded-full
                             text-xs
@@ -539,46 +432,41 @@ export const Accounts = () => {
                                 : "bg-blue-100 text-blue-700"
                             }
                           `}
-                        >
-                          {account.tipo}
-                        </span>
+                      >
+                        {account.tipo}
+                      </span>
+                    </td>
 
-                      </td>
-
-                      <td
-                        className="
+                    <td
+                      className="
                           p-4
                           text-green-600
                           font-medium
                         "
-                      >
-                        Q{account.saldo}
-                      </td>
+                    >
+                      Q{account.saldo}
+                    </td>
 
-                      <td
-                        className="
+                    <td
+                      className="
                           p-4
                           text-[#677750]/70
                         "
-                      >
-                        #{account.user_id}
-                      </td>
+                    >
+                      #{account.user_id}
+                    </td>
 
-                      <td className="p-4">
-
-                        <div
-                          className="
+                    <td className="p-4">
+                      <div
+                        className="
                             flex
                             gap-2
                             justify-center
                           "
-                        >
-
-                          <button
-                            onClick={() =>
-                              handleDelete(account.id)
-                            }
-                            className="
+                      >
+                        <button
+                          onClick={() => handleDelete(account.id)}
+                          className="
                               px-3 py-1
                               text-xs
                               rounded
@@ -587,50 +475,33 @@ export const Accounts = () => {
                               hover:bg-red-700
                               transition
                             "
-                          >
-                            Eliminar
-                          </button>
-
-                        </div>
-
-                      </td>
-
-                    </tr>
-
-                  ))
-
-                ) : (
-
-                  <tr>
-
-                    <td
-                      colSpan="5"
-                      className="
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="5"
+                    className="
                         text-center
                         p-6
                         text-[#677750]/60
                       "
-                    >
-                      {
-                        loading
-                          ? "Cargando cuentas..."
-                          : "No se encontraron cuentas"
-                      }
-                    </td>
-
-                  </tr>
-
-                )
-              }
-
+                  >
+                    {loading
+                      ? "Cargando cuentas..."
+                      : "No se encontraron cuentas"}
+                  </td>
+                </tr>
+              )}
             </tbody>
-
           </table>
-
         </div>
-
       </div>
-
     </div>
   );
 };
