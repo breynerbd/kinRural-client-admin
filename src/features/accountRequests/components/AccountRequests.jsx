@@ -5,7 +5,8 @@ import { AccountRequestModal } from "./AccountRequestModal";
 import { useAccountRequestStore } from "../store/accountRequestStore";
 
 export const AccountRequests = () => {
-  const { accountRequests, loading, getAccountRequests } = useAccountRequestStore();
+  const { accountRequests, loading, getAccountRequests } =
+    useAccountRequestStore();
 
   const [selectedRequest, setSelectedRequest] = useState(null);
 
@@ -164,7 +165,7 @@ export const AccountRequests = () => {
             className="
               text-xs
               sm:text-sm
-              text-[#677750]/60
+              text-[#677750]/70
               mt-1
             "
           >
@@ -172,83 +173,244 @@ export const AccountRequests = () => {
           </p>
         </div>
 
-        {loading ? (
-          <div
-            className="
-                p-8
-                sm:p-10
-                text-center
-                text-sm
-                sm:text-base
-                text-[#677750]/60
-              "
-          >
-            Cargando solicitudes...
-          </div>
-        ) : (
-          <>
-            {/* MOBILE / TABLET CARDS */}
-            <div className="block lg:hidden">
-              {filteredRequests.length > 0 ? (
-                <div className="divide-y divide-[#677750]/10">
-                  {filteredRequests.map((request) => (
-                    <div
-                      key={request.id}
-                      className="
+        <>
+          {/* MOBILE / TABLET CARDS */}
+          <div className="block lg:hidden">
+            {loading ? (
+              <div
+                className="
+      text-center
+      p-6
+      text-sm
+      text-[#677750]/70
+    "
+              >
+                Cargando solicitudes...
+              </div>
+            ) : filteredRequests.length > 0 ? (
+              <div className="divide-y divide-[#677750]/10">
+                {filteredRequests.map((request) => (
+                  <div
+                    key={request.id}
+                    className="
                               p-4
                               space-y-4
                             "
-                    >
-                      {/* USER */}
-                      <div className="space-y-1">
-                        <p
-                          className="
+                  >
+                    {/* USER */}
+                    <div className="space-y-1">
+                      <p
+                        className="
                                   font-semibold
                                   text-[#677750]
                                   text-sm
                                   sm:text-base
                                   break-words
                                 "
-                        >
-                          {request.fullName}
-                        </p>
+                      >
+                        {request.fullName}
+                      </p>
 
-                        <p
-                          className="
+                      <p
+                        className="
                                   text-xs
                                   sm:text-sm
-                                  text-[#677750]/60
+                                  text-[#677750]/70
                                   break-words
                                 "
-                        >
-                          DPI: {request.dpi}
-                        </p>
-                      </div>
+                      >
+                        DPI: {request.dpi}
+                      </p>
+                    </div>
 
-                      {/* EMAIL */}
-                      <div>
-                        <p className="text-xs text-[#677750]/50 mb-1">Correo</p>
+                    {/* EMAIL */}
+                    <div>
+                      <p className="text-xs text-[#677750]/50 mb-1">Correo</p>
 
-                        <p
-                          className="
+                      <p
+                        className="
                                   text-sm
                                   text-[#677750]/80
                                   break-words
                                 "
-                        >
-                          {request.email}
-                        </p>
-                      </div>
+                      >
+                        {request.email}
+                      </p>
+                    </div>
 
-                      {/* TYPE + STATUS */}
-                      <div
-                        className="
+                    {/* TYPE + STATUS */}
+                    <div
+                      className="
                                 flex
                                 flex-wrap
                                 items-center
                                 gap-2
                               "
+                    >
+                      <span
+                        className={`
+                                  px-2 py-1
+                                  rounded-full
+                                  text-xs
+                                  font-medium
+                                  ${
+                                    request.tipo === "AHORRO"
+                                      ? "bg-green-100 text-green-700"
+                                      : "bg-blue-100 text-blue-700"
+                                  }
+                                `}
                       >
+                        {request.tipo}
+                      </span>
+
+                      <span
+                        className={`
+                                  px-2 py-1
+                                  rounded-full
+                                  text-xs
+                                  font-medium
+                                  ${statusStyles[request.status]}
+                                `}
+                      >
+                        {request.status}
+                      </span>
+                    </div>
+
+                    {/* DATE */}
+                    <div>
+                      <p className="text-xs text-[#677750]/50 mb-1">Fecha</p>
+
+                      <p
+                        className="
+                                  text-sm
+                                  text-[#677750]/70
+                                "
+                      >
+                        {new Date(request.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+
+                    {/* ACTION */}
+                    <button
+                      onClick={() => openModal(request)}
+                      className="
+  px-3 py-1
+  text-xs
+  rounded
+  bg-[#677750]
+  text-white
+  hover:opacity-90
+  transition
+"
+                    >
+                      Gestionar
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div
+                className="
+                        text-center
+                        p-8
+                        text-sm
+                        text-[#677750]/70
+                      "
+              >
+                No hay solicitudes registradas
+              </div>
+            )}
+          </div>
+
+          {/* DESKTOP TABLE */}
+          <div className="hidden lg:block overflow-x-auto">
+            <table className="w-full text-sm min-w-[1000px]">
+              <thead
+                className="
+                  text-left
+                  text-[#677750]/70
+                  border-b
+                  border-[#677750]/10
+                  bg-[#677750]/5
+                "
+              >
+                <tr>
+                  <th className="p-4">Solicitante</th>
+
+                  <th className="p-4">Correo</th>
+
+                  <th className="p-4">Tipo</th>
+
+                  <th className="p-4">Estado</th>
+
+                  <th className="p-4">Fecha</th>
+
+                  <th className="p-4 text-center">Acciones</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td
+                      colSpan="6"
+                      className="
+        text-center
+        p-8
+        text-[#677750]/70
+      "
+                    >
+                      Cargando solicitudes...
+                    </td>
+                  </tr>
+                ) : filteredRequests.length > 0 ? (
+                  filteredRequests.map((request) => (
+                    <tr
+                      key={request.id}
+                      className="
+                              border-b
+                              border-[#677750]/5
+                              hover:bg-[#677750]/5
+                              transition
+                            "
+                    >
+                      {/* USER */}
+                      <td className="p-4">
+                        <div>
+                          <p
+                            className="
+                                    font-medium
+                                    text-[#677750]
+                                    break-words
+                                  "
+                          >
+                            {request.fullName}
+                          </p>
+
+                          <p
+                            className="
+                                    text-xs
+                                    text-[#677750]/70
+                                  "
+                          >
+                            DPI: {request.dpi}
+                          </p>
+                        </div>
+                      </td>
+
+                      {/* EMAIL */}
+                      <td
+                        className="
+                                p-4
+                                text-[#677750]/70
+                                break-words
+                              "
+                      >
+                        {request.email}
+                      </td>
+
+                      {/* ACCOUNT TYPE */}
+                      <td className="p-4">
                         <span
                           className={`
                                   px-2 py-1
@@ -264,7 +426,10 @@ export const AccountRequests = () => {
                         >
                           {request.tipo}
                         </span>
+                      </td>
 
+                      {/* STATUS */}
+                      <td className="p-4">
                         <span
                           className={`
                                   px-2 py-1
@@ -276,217 +441,62 @@ export const AccountRequests = () => {
                         >
                           {request.status}
                         </span>
-                      </div>
+                      </td>
 
                       {/* DATE */}
-                      <div>
-                        <p className="text-xs text-[#677750]/50 mb-1">Fecha</p>
-
-                        <p
-                          className="
-                                  text-sm
-                                  text-[#677750]/70
-                                "
-                        >
-                          {new Date(request.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
-
-                      {/* ACTION */}
-                      <button
-                        onClick={() => openModal(request)}
+                      <td
                         className="
-                                w-full
-                                sm:w-auto
-                                px-4 py-2
-                                rounded-lg
-                                bg-[#677750]
-                                text-white
-                                text-sm
-                                hover:opacity-90
-                                transition
-                              "
-                      >
-                        Gestionar
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div
-                  className="
-                        text-center
-                        p-8
-                        text-sm
-                        text-[#677750]/60
-                      "
-                >
-                  No hay solicitudes registradas
-                </div>
-              )}
-            </div>
-
-            {/* DESKTOP TABLE */}
-            <div className="hidden lg:block overflow-x-auto">
-              <table className="w-full text-sm min-w-[900px]">
-                <thead
-                  className="
-                      border-b
-                      border-[#677750]/10
-                      text-left
-                      text-[#677750]/60
-                    "
-                >
-                  <tr>
-                    <th className="p-4">Solicitante</th>
-
-                    <th className="p-4">Correo</th>
-
-                    <th className="p-4">Tipo</th>
-
-                    <th className="p-4">Estado</th>
-
-                    <th className="p-4">Fecha</th>
-
-                    <th className="p-4 text-center">Acciones</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {filteredRequests.length > 0 ? (
-                    filteredRequests.map((request) => (
-                      <tr
-                        key={request.id}
-                        className="
-                              border-b
-                              border-[#677750]/5
-                              hover:bg-[#fffaf2]/50
-                              transition
-                            "
-                      >
-                        {/* USER */}
-                        <td className="p-4">
-                          <div>
-                            <p
-                              className="
-                                    font-medium
-                                    text-[#677750]
-                                    break-words
-                                  "
-                            >
-                              {request.fullName}
-                            </p>
-
-                            <p
-                              className="
-                                    text-xs
-                                    text-[#677750]/60
-                                  "
-                            >
-                              DPI: {request.dpi}
-                            </p>
-                          </div>
-                        </td>
-
-                        {/* EMAIL */}
-                        <td
-                          className="
                                 p-4
                                 text-[#677750]/70
-                                break-words
                               "
-                        >
-                          {request.email}
-                        </td>
+                      >
+                        {new Date(request.createdAt).toLocaleDateString()}
+                      </td>
 
-                        {/* ACCOUNT TYPE */}
-                        <td className="p-4">
-                          <span
-                            className={`
-                                  px-2 py-1
-                                  rounded-full
-                                  text-xs
-                                  font-medium
-                                  ${
-                                    request.tipo === "AHORRO"
-                                      ? "bg-green-100 text-green-700"
-                                      : "bg-blue-100 text-blue-700"
-                                  }
-                                `}
-                          >
-                            {request.tipo}
-                          </span>
-                        </td>
-
-                        {/* STATUS */}
-                        <td className="p-4">
-                          <span
-                            className={`
-                                  px-2 py-1
-                                  rounded-full
-                                  text-xs
-                                  font-medium
-                                  ${statusStyles[request.status]}
-                                `}
-                          >
-                            {request.status}
-                          </span>
-                        </td>
-
-                        {/* DATE */}
-                        <td
+                      {/* ACTIONS */}
+                      <td className="p-4">
+                        <div
                           className="
-                                p-4
-                                text-[#677750]/60
-                              "
-                        >
-                          {new Date(request.createdAt).toLocaleDateString()}
-                        </td>
-
-                        {/* ACTIONS */}
-                        <td className="p-4">
-                          <div
-                            className="
                                   flex
                                   justify-center
                                 "
+                        >
+                          <button
+                            onClick={() => openModal(request)}
+                            className="
+  px-3 py-1
+  text-xs
+  rounded
+  bg-[#677750]
+  text-white
+  hover:opacity-90
+  transition
+"
                           >
-                            <button
-                              onClick={() => openModal(request)}
-                              className="
-                                    px-4 py-2
-                                    rounded-lg
-                                    bg-[#677750]
-                                    text-white
-                                    hover:opacity-90
-                                    transition
-                                  "
-                            >
-                              Gestionar
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td
-                        colSpan="6"
-                        className="
-                              text-center
-                              p-10
-                              text-[#677750]/60
-                            "
-                      >
-                        No hay solicitudes registradas
+                            Gestionar
+                          </button>
+                        </div>
                       </td>
                     </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </>
-        )}
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan="6"
+                      className="
+                              text-center
+                              p-10
+                              text-[#677750]/70
+                            "
+                    >
+                      No hay solicitudes registradas
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
       </div>
     </div>
   );

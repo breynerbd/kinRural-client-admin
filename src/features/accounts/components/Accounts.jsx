@@ -239,7 +239,18 @@ export const Accounts = () => {
 
         {/* MOBILE / TABLET */}
         <div className="block lg:hidden">
-          {filteredAccounts.length > 0 ? (
+          {loading ? (
+            <div
+              className="
+      text-center
+      p-6
+      text-sm
+      text-[#677750]/60
+    "
+            >
+              Cargando cuentas...
+            </div>
+          ) : filteredAccounts.length > 0 ? (
             <div className="divide-y divide-[#677750]/10">
               {filteredAccounts.map((account) => (
                 <div
@@ -372,15 +383,16 @@ export const Accounts = () => {
             className="
               w-full
               text-sm
-              min-w-[800px]
+              min-w-[1000px]
             "
           >
             <thead
               className="
                 text-left
-                text-[#677750]/60
+                text-[#677750]/70
                 border-b
                 border-[#677750]/10
+                bg-[#677750]/5
               "
             >
               <tr>
@@ -397,16 +409,29 @@ export const Accounts = () => {
             </thead>
 
             <tbody>
-              {filteredAccounts.length > 0 ? (
+              {loading ? (
+                <tr>
+                  <td
+                    colSpan="5"
+                    className="
+        text-center
+        p-8
+        text-[#677750]/60
+      "
+                  >
+                    Cargando cuentas...
+                  </td>
+                </tr>
+              ) : filteredAccounts.length > 0 ? (
                 filteredAccounts.map((account) => (
                   <tr
                     key={account.id}
                     className="
-                        border-b
-                        border-[#677750]/5
-                        hover:bg-[#fffaf2]/50
-                        transition
-                      "
+                      border-b
+                      border-[#677750]/5
+                      hover:bg-[#677750]/5
+                      transition
+                    "
                   >
                     <td
                       className="

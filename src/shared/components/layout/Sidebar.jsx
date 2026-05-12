@@ -1,39 +1,38 @@
-
 import { Link, useLocation } from "react-router-dom";
 
 export const Sidebar = ({ open, setOpen }) => {
+  const location = useLocation();
 
-    const location = useLocation();
+  const items = [
+    { label: "Dashboard", path: "/dashboard" }, // <--- solo /dashboard
+    { label: "Usuarios", path: "/dashboard/users" },
+    { label: "Roles", path: "/dashboard/roles" },
+    { label: "Cuentas", path: "/dashboard/accounts" },
+    { label: "Solicitudes de cuenta", path: "/dashboard/account-requests" },
+    { label: "Préstamos", path: "/dashboard/loans" },
+    { label: "Tarjetas", path: "/dashboard/cards" },
+    { label: "Transacciones", path: "/dashboard/transactions" },
+  ];
 
-    const items = [
-        { label: "Usuarios", path: "/dashboard/users" },
-        { label: "Roles", path: "/dashboard/roles" },
-        { label: "Cuentas", path: "/dashboard/accounts" },
-        { label: "Solicitudes de cuenta", path: "/dashboard/account-requests" },
-        { label: "Préstamos", path: "/dashboard/loans" },
-        { label: "Tarjetas", path: "/dashboard/cards" },
-        { label: "Transacciones", path: "/dashboard/transactions" },
-    ];
-
-    return (
-        <>
-            {/* OVERLAY MOBILE */}
-            {open && (
-                <div
-                    onClick={() => setOpen(false)}
-                    className="
+  return (
+    <>
+      {/* OVERLAY MOBILE */}
+      {open && (
+        <div
+          onClick={() => setOpen(false)}
+          className="
                         fixed
                         inset-0
                         bg-black/30
                         z-40
                         lg:hidden
                     "
-                />
-            )}
+        />
+      )}
 
-            {/* SIDEBAR */}
-            <aside
-                className={`
+      {/* SIDEBAR */}
+      <aside
+        className={`
                     fixed
                     top-0
                     left-0
@@ -55,70 +54,62 @@ export const Sidebar = ({ open, setOpen }) => {
                     lg:min-h-[calc(100vh-5rem)]
                     lg:shadow-sm
                 `}
-            >
-
-                {/* HEADER */}
-                <div className="p-4 border-b border-[#677750]/10">
-
-                    <div className="flex items-center justify-between">
-
-                        <div>
-                            <p
-                                className="
+      >
+        {/* HEADER */}
+        <div className="p-4 border-b border-[#677750]/10">
+          <div className="flex items-center justify-between">
+            <div>
+              <p
+                className="
                                     text-xs
                                     uppercase
                                     tracking-widest
                                     text-[#677750]/60
                                 "
-                            >
-                                Navegación
-                            </p>
+              >
+                Navegación
+              </p>
 
-                            <h2
-                                className="
+              <h2
+                className="
                                     text-sm
                                     font-semibold
                                     text-[#677750]
                                     mt-1
                                 "
-                            >
-                                Panel Admin
-                            </h2>
-                        </div>
+              >
+                Panel Admin
+              </h2>
+            </div>
 
-                        {/* CLOSE MOBILE */}
-                        <button
-                            onClick={() => setOpen(false)}
-                            className="
+            {/* CLOSE MOBILE */}
+            <button
+              onClick={() => setOpen(false)}
+              className="
                                 lg:hidden
                                 text-[#677750]
                                 p-2
                                 rounded-lg
                                 hover:bg-[#677750]/10
                             "
-                        >
-                            ✕
-                        </button>
-                    </div>
-                </div>
+            >
+              ✕
+            </button>
+          </div>
+        </div>
 
-                {/* ITEMS */}
-                <nav className="p-3">
+        {/* ITEMS */}
+        <nav className="p-3">
+          <ul className="flex flex-col gap-1">
+            {items.map((item) => {
+              const isActive = location.pathname === item.path;
 
-                    <ul className="flex flex-col gap-1">
-
-                        {items.map((item) => {
-
-                            const isActive =
-                                location.pathname === item.path;
-
-                            return (
-                                <li key={item.label}>
-
-                                    <Link
-                                        to={item.path}
-                                        onClick={() => setOpen(false)}
-                                        className={`
+              return (
+                <li key={item.label}>
+                  <Link
+                    to={item.path}
+                    onClick={() => setOpen(false)}
+                    className={`
                                             flex
                                             items-center
                                             gap-3
@@ -131,67 +122,60 @@ export const Sidebar = ({ open, setOpen }) => {
                                             duration-200
 
                                             ${
-                                                isActive
-                                                    ? "bg-[#677750]/10 text-[#677750] shadow-sm"
-                                                    : "text-[#677750]/80 hover:bg-[#677750]/5 hover:text-[#677750]"
+                                              isActive
+                                                ? "bg-[#677750]/10 text-[#677750] shadow-sm"
+                                                : "text-[#677750]/80 hover:bg-[#677750]/5 hover:text-[#677750]"
                                             }
                                         `}
-                                    >
-
-                                        {/* INDICADOR */}
-                                        <span
-                                            className={`
+                  >
+                    {/* INDICADOR */}
+                    <span
+                      className={`
                                                 w-2
                                                 h-2
                                                 rounded-full
                                                 flex-shrink-0
 
                                                 ${
-                                                    isActive
-                                                        ? "bg-[#677750]"
-                                                        : "bg-[#677750]/30"
+                                                  isActive
+                                                    ? "bg-[#677750]"
+                                                    : "bg-[#677750]/30"
                                                 }
                                             `}
-                                        />
+                    />
 
-                                        <span>
-                                            {item.label}
-                                        </span>
-                                    </Link>
-                                </li>
-                            );
-                        })}
-                    </ul>
-                </nav>
+                    <span>{item.label}</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
 
-                {/* FOOTER */}
-                <div
-                    className="
+        {/* FOOTER */}
+        <div
+          className="
                         absolute
                         bottom-4
                         left-4
                         right-4
                     "
-                >
-                    <div
-                        className="
+        >
+          <div
+            className="
                             bg-[#fffaf2]
                             border
                             border-[#677750]/10
                             rounded-xl
                             p-3
                         "
-                    >
-                        <p className="text-xs text-[#677750]/70">
-                            Kinrural Admin
-                        </p>
+          >
+            <p className="text-xs text-[#677750]/70">Kinrural Admin</p>
 
-                        <p className="text-sm font-medium text-[#677750]">
-                            v1.0.0
-                        </p>
-                    </div>
-                </div>
-            </aside>
-        </>
-    );
+            <p className="text-sm font-medium text-[#677750]">v1.0.0</p>
+          </div>
+        </div>
+      </aside>
+    </>
+  );
 };

@@ -206,6 +206,36 @@ export const Loans = () => {
         </button>
       </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="p-4 bg-white rounded-xl shadow flex flex-col">
+          <span className="text-xs text-gray-500">Total Préstamos</span>
+          <span className="text-2xl font-bold text-[#677750]">
+            {loans.length}
+          </span>
+        </div>
+
+        <div className="p-4 bg-white rounded-xl shadow flex flex-col">
+          <span className="text-xs text-gray-500">Pendientes</span>
+          <span className="text-2xl font-bold text-yellow-700">
+            {loans.filter((l) => l.estado === "PENDING").length}
+          </span>
+        </div>
+
+        <div className="p-4 bg-white rounded-xl shadow flex flex-col">
+          <span className="text-xs text-gray-500">Activos</span>
+          <span className="text-2xl font-bold text-green-700">
+            {loans.filter((l) => l.estado === "ACTIVE").length}
+          </span>
+        </div>
+
+        <div className="p-4 bg-white rounded-xl shadow flex flex-col">
+          <span className="text-xs text-gray-500">Morosos</span>
+          <span className="text-2xl font-bold text-red-700">
+            {loans.filter((l) => l.estado === "DELINQUENT").length}
+          </span>
+        </div>
+      </div>
+
       {/* SEARCH */}
       <div
         className="
@@ -570,11 +600,12 @@ export const Loans = () => {
           >
             <thead
               className="
-                text-left
-                text-[#677750]/60
-                border-b
-                border-[#677750]/10
-              "
+    text-left
+    text-[#677750]/70
+    border-b
+    border-[#677750]/10
+    bg-[#677750]/5
+  "
             >
               <tr>
                 <th className="p-4">Usuario</th>
@@ -606,7 +637,7 @@ export const Loans = () => {
                       className="
                           border-b
                           border-[#677750]/5
-                          hover:bg-[#fffaf2]/50
+                          hover:bg-[#677750]/5
                           transition
                         "
                     >
@@ -711,14 +742,14 @@ export const Loans = () => {
                           <button
                             onClick={() => openModal(loan.id)}
                             className="
-                                px-3 py-1
-                                text-xs
-                                rounded
-                                bg-[#677750]
-                                text-white
-                                hover:opacity-90
-                                transition
-                              "
+  px-3 py-1
+  text-xs
+  rounded
+  bg-[#677750]
+  text-white
+  hover:opacity-90
+  transition
+"
                           >
                             Gestionar
                           </button>

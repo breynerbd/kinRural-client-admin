@@ -9,15 +9,23 @@ export const TransactionsStore = create((set) => ({
   transactions: [],
   isLoading: false,
 
-  getTransactions: async () => {
-    try {
-      set({ isLoading: true });
-      const { data } = await getTransactions();
-      set({ transactions: data, isLoading: false });
-    } finally {
-      set({ isLoading: false });
-    }
-  },
+getTransactions: async () => {
+  try {
+    set({ isLoading: true });
+
+    const { data } = await getTransactions();
+
+    console.log(data);
+
+    set({
+      transactions: data,
+      isLoading: false,
+    });
+
+  } finally {
+    set({ isLoading: false });
+  }
+},
 
   getTransactionsByAccount: async (accountId) => {
     try {

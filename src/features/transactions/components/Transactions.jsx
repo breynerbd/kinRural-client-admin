@@ -464,16 +464,17 @@ export const Transactions = () => {
           <table
             className="
               w-full
+              min-w-[1200px]
               text-sm
-              min-w-[900px]
             "
           >
             <thead
               className="
                 text-left
-                text-[#677750]/60
+                text-[#677750]/70
                 border-b
                 border-[#677750]/10
+                bg-[#677750]/5
               "
             >
               <tr>

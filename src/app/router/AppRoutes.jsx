@@ -3,6 +3,8 @@ import AuthPage from "../../features/auth/pages/AuthPage.jsx";
 import DashboardPage from "../layouts/DashboardPage.jsx";
 
 // features
+import { DashboardHome } from "../../features/dashboard/components/DashboardHome.jsx";
+
 import { Users } from "../../features/users/components/Users.jsx";
 import { UserModal } from "../../features/users/components/UserModal.jsx";
 
@@ -24,7 +26,6 @@ import { CardModal } from "../../features/cards/components/CardModal.jsx";
 import { Transactions } from "../../features/transactions/components/Transactions.jsx";
 import { TransactionModal } from "../../features/transactions/components/TransactionModal.jsx";
 
-
 export const AppRoutes = () => {
   return (
     <Routes>
@@ -33,6 +34,8 @@ export const AppRoutes = () => {
 
       {/* Dashboard */}
       <Route path="/dashboard/*" element={<DashboardPage />}>
+        {/* Dashboard home */}
+        <Route index element={<DashboardHome />} />
 
         {/* Usuarios */}
         <Route path="users" element={<Users />} />
@@ -48,7 +51,10 @@ export const AppRoutes = () => {
 
         {/* Solicitudes */}
         <Route path="account-requests" element={<AccountRequests />} />
-        <Route path="account-requests/review" element={<AccountRequestModal />} />
+        <Route
+          path="account-requests/review"
+          element={<AccountRequestModal />}
+        />
 
         {/* Préstamos */}
         <Route path="loans" element={<Loans />} />
@@ -61,8 +67,6 @@ export const AppRoutes = () => {
         {/* Transacciones */}
         <Route path="transactions" element={<Transactions />} />
         <Route path="transactions/review" element={<TransactionModal />} />
-
-
       </Route>
 
       {/* 404 */}

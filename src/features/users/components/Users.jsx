@@ -5,7 +5,7 @@ import { showConfirmToast } from "../../auth/components/ConfirmModal";
 import { showError, showSuccess } from "../../../shared/utils/toast";
 
 export const Users = () => {
-  const { users, getUsers, deleteUser } = useUsersStore();
+  const { users, getUsers, deleteUser, loading } = useUsersStore();
 
   const [openModal, setOpenModal] = useState(false);
 
@@ -13,19 +13,31 @@ export const Users = () => {
 
   const [search, setSearch] = useState("");
 
+  const [roleFilter, setRoleFilter] = useState(""); // ADMIN / USUARIO / ""
+  const [minIncome, setMinIncome] = useState("");
+  const [maxIncome, setMaxIncome] = useState("");
+
   useEffect(() => {
     getUsers();
   }, [getUsers]);
 
-  const filteredUsers = users.filter((user) => {
-    const fullName = `${user.nombre} ${user.apellido}`.toLowerCase();
-
-    return (
-      fullName.includes(search.toLowerCase()) ||
-      user.correo?.toLowerCase().includes(search.toLowerCase()) ||
-      user.id?.toString().includes(search)
-    );
-  });
+  const filteredUsers = users
+    .filter((user) => {
+      const fullName = `${user.nombre} ${user.apellido}`.toLowerCase();
+      return (
+        fullName.includes(search.toLowerCase()) ||
+        user.correo?.toLowerCase().includes(search.toLowerCase()) ||
+        user.id?.toString().includes(search)
+      );
+    })
+    .filter((user) => {
+      if (roleFilter && user.role_id.toString() !== roleFilter) return false;
+      if (minIncome && user.ingresos_mensuales < Number(minIncome))
+        return false;
+      if (maxIncome && user.ingresos_mensuales > Number(maxIncome))
+        return false;
+      return true;
+    });
 
   const handleDelete = (id, nombre) => {
     showConfirmToast({
@@ -135,6 +147,62 @@ export const Users = () => {
             focus:ring-[#677750]/40
           "
         />
+        {/* ADVANCED FILTERS */}
+        <div className="bg-white border border-[#677750]/10 rounded-xl shadow-sm p-4 sm:p-5 mb-6 flex flex-col sm:flex-row gap-4 items-end">
+          {/* Rol */}
+          <div>
+            <label className="text-xs text-[#677750]/60 mb-1 block">Rol</label>
+            <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="border border-[#677750]/20 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#677750]/40"
+            >
+              <option value="">Todos</option>
+              <option value="1">ADMIN</option>
+              <option value="2">USUARIO</option>
+            </select>
+          </div>
+
+          {/* Ingreso mínimo */}
+          <div>
+            <label className="text-xs text-[#677750]/60 mb-1 block">
+              Ingreso mínimo
+            </label>
+            <input
+              type="number"
+              placeholder="Q0"
+              value={minIncome}
+              onChange={(e) => setMinIncome(e.target.value)}
+              className="border border-[#677750]/20 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#677750]/40"
+            />
+          </div>
+
+          {/* Ingreso máximo */}
+          <div>
+            <label className="text-xs text-[#677750]/60 mb-1 block">
+              Ingreso máximo
+            </label>
+            <input
+              type="number"
+              placeholder="Q10000"
+              value={maxIncome}
+              onChange={(e) => setMaxIncome(e.target.value)}
+              className="border border-[#677750]/20 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#677750]/40"
+            />
+          </div>
+
+          {/* Reset filtros */}
+          <button
+            className="bg-[#677750] text-white px-4 py-2 rounded-lg text-sm hover:opacity-90 transition"
+            onClick={() => {
+              setRoleFilter("");
+              setMinIncome("");
+              setMaxIncome("");
+            }}
+          >
+            Limpiar filtros
+          </button>
+        </div>
       </div>
 
       {/* MODAL */}
@@ -191,7 +259,18 @@ export const Users = () => {
 
         {/* MOBILE / TABLET */}
         <div className="block lg:hidden">
-          {filteredUsers.length > 0 ? (
+          {loading ? (
+            <div
+              className="
+                text-center
+                p-6
+                text-sm
+                text-[#677750]/60
+              "
+            >
+              Cargando usuarios...
+            </div>
+          ) : filteredUsers.length > 0 ? (
             <div
               className="
                   divide-y
@@ -481,7 +560,20 @@ export const Users = () => {
             </thead>
 
             <tbody>
-              {filteredUsers.length > 0 ? (
+              {loading ? (
+                <tr>
+                  <td
+                    colSpan="9"
+                    className="
+                    text-center
+                    p-8
+                    text-[#677750]/60
+                  "
+                  >
+                    Cargando usuarios...
+                  </td>
+                </tr>
+              ) : filteredUsers.length > 0 ? (
                 filteredUsers.map((user) => (
                   <tr
                     key={user.id}

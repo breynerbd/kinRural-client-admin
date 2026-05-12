@@ -11,7 +11,7 @@ export const CardsStore = create((set) => ({
       const { data } = await getCards();
       set({ cards: data, isLoading: false });
     } catch (error) {
-      set({ loading: false });
+      set({ isLoading: false });
       throw error;
     }
   },
@@ -26,7 +26,7 @@ export const CardsStore = create((set) => ({
       }));
       return data;
     } catch (error) {
-      set({ loading: false });
+      set({ isLoading: false });
       throw error;
     }
   },
@@ -41,7 +41,7 @@ export const CardsStore = create((set) => ({
       }));
       return data;
     } catch (error) {
-      set({ loading: false });
+      set({ isLoading: false });
       throw error;
     }
   },
@@ -56,7 +56,7 @@ export const CardsStore = create((set) => ({
       }));
       return data;
     } catch (error) {
-      set({ loading: false });
+      set({ isLoading: false });
       throw error;
     }
   },
