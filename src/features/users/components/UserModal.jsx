@@ -147,6 +147,10 @@ export const UserModal = ({ isOpen, onClose, user }) => {
                     value: 2,
                     message: "Debe tener al menos 2 caracteres",
                   },
+                  pattern: {
+                    value: /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/,
+                    message: "Solo se permiten letras",
+                  },
                 })}
               />
 
@@ -159,11 +163,16 @@ export const UserModal = ({ isOpen, onClose, user }) => {
             <div className="flex flex-col min-w-0">
               <label className="label">Apellido</label>
 
+              {/* APELLIDO */}
               <input
                 className="input"
                 placeholder="Ej. López"
                 {...register("apellido", {
                   required: "El apellido es obligatorio",
+                  pattern: {
+                    value: /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/,
+                    message: "Solo se permiten letras",
+                  },
                 })}
               />
 
@@ -221,6 +230,10 @@ export const UserModal = ({ isOpen, onClose, user }) => {
                 placeholder="12345678"
                 {...register("telefono", {
                   required: "El teléfono es obligatorio",
+                  pattern: {
+                    value: /^[0-9]{8}$/,
+                    message: "El teléfono debe tener 8 números",
+                  },
                 })}
               />
 
@@ -308,6 +321,10 @@ export const UserModal = ({ isOpen, onClose, user }) => {
                     placeholder="juanperez"
                     {...register("username", {
                       required: "El username es obligatorio",
+                      pattern: {
+                        value: /^[a-zA-Z0-9_]+$/,
+                        message: "Solo letras, números y guion bajo",
+                      },
                     })}
                   />
 

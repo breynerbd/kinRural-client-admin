@@ -1,10 +1,21 @@
 // src/pages/AuthPage.jsx
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { LoginForm } from "../components/LoginForm.jsx";
 import { ForgotPasswordForm } from "../components/ForgotPasswordForm.jsx";
+import { useAuthStore } from "..//store/authStore.js"; // ajusta la ruta si es diferente
 
 const AuthPage = () => {
     const [view, setView] = useState("login");
+
+    const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/dashboard", { replace: true });
+        }
+    }, [isAuthenticated, navigate]);
 
     return (
         <div
