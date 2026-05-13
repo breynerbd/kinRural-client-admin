@@ -9,10 +9,6 @@ export const Transactions = () => {
 
   const getTransactions = TransactionsStore((state) => state.getTransactions);
 
-  const getTransactionsByAccount = TransactionsStore(
-    (state) => state.getTransactionsByAccount,
-  );
-
   const isLoading = TransactionsStore((state) => state.isLoading);
 
   const [searchAccountId, setSearchAccountId] = useState("");
@@ -28,51 +24,51 @@ export const Transactions = () => {
   }, [getTransactions]);
 
   /* =========================
-     SEARCH
-  ========================= */
-
-  const handleSearch = async () => {
-    if (!searchAccountId) {
-      getTransactions();
-
-      return;
-    }
-
-    await getTransactionsByAccount(searchAccountId);
-  };
-
-  /* =========================
-     FILTERED
+     FILTERS
   ========================= */
 
   const filteredTransactions = useMemo(() => {
-    return transactions;
-  }, [transactions]);
+    return transactions.filter((transaction) => {
+      return String(transaction.cuenta_origen_id ?? "").includes(
+        searchAccountId,
+      );
+    });
+  }, [transactions, searchAccountId]);
 
   return (
-    <div className="p-3 sm:p-4 md:p-6">
+    <div
+      className="
+    w-full
+    min-w-0
+    overflow-x-hidden
+    p-3
+    sm:p-4
+    md:p-6
+  "
+    >
       {/* HEADER */}
 
       <div
         className="
           flex
           flex-col
-          lg:flex-row
-          lg:justify-between
-          lg:items-center
+          xl:flex-row
+          xl:items-center
+          xl:justify-between
           gap-4
           mb-6
-          sm:mb-8
         "
       >
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h1
             className="
-              text-2xl
-              sm:text-3xl
+              text-xl
+              sm:text-2xl
+              md:text-3xl
               font-bold
               text-[#677750]
-              break-words
+              break-all
+              leading-tight
             "
           >
             Gestión de Transacciones
@@ -84,6 +80,7 @@ export const Transactions = () => {
               sm:text-sm
               text-[#677750]/70
               mt-1
+              break-all
             "
           >
             Administra las transferencias bancarias
@@ -94,13 +91,17 @@ export const Transactions = () => {
           onClick={() => setIsModalOpen(true)}
           className="
             w-full
-            sm:w-auto
+            sm:w-full
+            md:w-auto
+            shrink-0
             bg-[#677750]
-            px-4 py-2.5
-            rounded-lg
+            px-4
+            py-3
+            rounded-xl
             text-white
             text-sm
             sm:text-base
+            font-medium
             hover:opacity-90
             transition
           "
@@ -114,23 +115,27 @@ export const Transactions = () => {
       <div
         className="
           bg-white
-          border border-[#677750]/10
-          rounded-xl
+          border
+          border-[#677750]/10
+          rounded-2xl
           shadow-sm
           p-4
           sm:p-5
           mb-6
+          overflow-hidden
         "
       >
         <div
           className="
             flex
             flex-col
-            md:flex-row
-            md:items-end
-            gap-3
+            xl:flex-row
+            xl:items-end
+            gap-4
           "
         >
+          {/* INPUT */}
+
           <div className="flex-1 min-w-0">
             <label
               className="
@@ -138,23 +143,25 @@ export const Transactions = () => {
                 sm:text-sm
                 text-[#677750]/60
                 block
-                mb-1
+                mb-2
               "
             >
               Buscar por ID de cuenta origen
             </label>
 
             <input
-              type="number"
+              type="text"
               placeholder="Ej: 1"
               value={searchAccountId}
               onChange={(e) => setSearchAccountId(e.target.value)}
               className="
                 w-full
+                min-w-0
                 border
                 border-[#677750]/20
-                rounded-lg
-                px-3 py-2.5
+                rounded-xl
+                px-3
+                py-3
                 text-sm
                 sm:text-base
                 focus:outline-none
@@ -165,6 +172,8 @@ export const Transactions = () => {
             />
           </div>
 
+          {/* ACTIONS */}
+
           <div
             className="
               flex
@@ -172,43 +181,26 @@ export const Transactions = () => {
               sm:flex-row
               gap-2
               w-full
-              md:w-auto
+              xl:w-auto
             "
           >
             <button
-              onClick={handleSearch}
+              onClick={() => setSearchAccountId("")}
               className="
                 w-full
-                sm:w-auto
-                px-4 py-2.5
-                rounded-lg
-                bg-[#677750]
-                text-white
-                text-sm
-                hover:opacity-90
-                transition
-              "
-            >
-              Buscar
-            </button>
-
-            <button
-              onClick={() => {
-                setSearchAccountId("");
-
-                getTransactions();
-              }}
-              className="
-                w-full
-                sm:w-auto
-                px-4 py-2.5
-                rounded-lg
+                sm:w-full
+                md:w-auto
+                px-4
+                py-3
+                rounded-xl
                 border
                 border-[#677750]/20
                 text-[#677750]
                 text-sm
+                font-medium
                 hover:bg-[#677750]/10
                 transition
+                whitespace-nowrap
               "
             >
               Limpiar
@@ -224,15 +216,18 @@ export const Transactions = () => {
         onClose={() => setIsModalOpen(false)}
       />
 
-      {/* TABLE */}
+      {/* CONTENT */}
 
       <div
         className="
           bg-white
-          border border-[#677750]/10
-          rounded-xl
+          border
+          border-[#677750]/10
+          rounded-2xl
           shadow-sm
           overflow-hidden
+          w-full
+          min-w-0
         "
       >
         {/* TABLE HEADER */}
@@ -251,6 +246,7 @@ export const Transactions = () => {
               sm:text-lg
               font-semibold
               text-[#677750]
+              break-all
             "
           >
             Historial de Transacciones
@@ -262,20 +258,21 @@ export const Transactions = () => {
               sm:text-sm
               text-[#677750]/60
               mt-1
+              break-all
             "
           >
             Transferencias registradas en el sistema
           </p>
         </div>
 
-        {/* MOBILE / TABLET */}
+        {/* MOBILE + TABLET CARDS */}
 
-        <div className="block lg:hidden">
+        <div className="block 2xl:hidden">
           {isLoading ? (
             <div
               className="
-                  text-center
                   p-6
+                  text-center
                   text-sm
                   text-[#677750]/60
                 "
@@ -293,143 +290,158 @@ export const Transactions = () => {
                 <div
                   key={transaction.id}
                   className="
-                          p-4
-                          space-y-4
-                        "
+    p-4
+    sm:p-5
+    space-y-4
+    min-w-0
+  "
                 >
-                  {/* ID */}
+                  {/* TOP */}
 
-                  <div>
-                    <p
-                      className="
+                  <div
+                    className="
+    flex
+    flex-col
+    sm:flex-row
+    sm:items-center
+    sm:justify-between
+    gap-3
+    min-w-0
+  "
+                  >
+                    <div className="min-w-0">
+                      <p
+                        className="
                               text-xs
                               text-[#677750]/50
                               mb-1
                             "
-                    >
-                      ID
-                    </p>
+                      >
+                        ID
+                      </p>
 
-                    <p
-                      className="
+                      <p
+                        className="
                               font-semibold
                               text-[#677750]
                               text-sm
                               sm:text-base
-                              break-words
+                              break-all
                             "
-                    >
-                      #{transaction.id}
-                    </p>
-                  </div>
+                      >
+                        #{transaction.id}
+                      </p>
+                    </div>
 
-                  {/* TYPE + AMOUNT */}
-
-                  <div
-                    className="
-                            flex
-                            flex-wrap
-                            items-center
-                            gap-3
-                          "
-                  >
-                    <span
+                    <div
                       className="
-                              px-2 py-1
+    flex
+    flex-wrap
+    items-center
+    gap-2
+      min-w-0
+    "
+                    >
+                      <span
+                        className="
+                              px-3
+                              py-1
                               rounded-full
                               text-xs
                               font-medium
                               bg-[#677750]/10
                               text-[#677750]
+                              break-all
                             "
-                    >
-                      {transaction.tipo}
-                    </span>
+                      >
+                        {transaction.tipo}
+                      </span>
 
-                    <span
-                      className="
+                      <span
+                        className="
                               text-green-600
-                              font-semibold
+                              font-bold
                               text-sm
+                              sm:text-base
+                              break-all
                             "
-                    >
-                      Q{transaction.monto}
-                    </span>
+                      >
+                        Q{transaction.monto}
+                      </span>
+                    </div>
                   </div>
 
                   {/* DETAILS */}
 
                   <div
                     className="
-                            grid
-                            grid-cols-1
-                            sm:grid-cols-2
-                            gap-3
-                          "
+                          grid
+                          grid-cols-1
+                          sm:grid-cols-2
+                          gap-4
+                        "
                   >
-                    <div>
+                    <div className="min-w-0">
                       <p
                         className="
-                                text-xs
-                                text-[#677750]/50
-                                mb-1
-                              "
+                              text-xs
+                              text-[#677750]/50
+                              mb-1
+                            "
                       >
                         Cuenta Origen
                       </p>
 
                       <p
                         className="
-                                text-sm
-                                text-[#677750]/70
-                              "
+                              text-sm
+                              text-[#677750]/70
+                              break-all
+                            "
                       >
                         #{transaction.cuenta_origen_id}
                       </p>
                     </div>
 
-                    <div>
+                    <div className="min-w-0">
                       <p
                         className="
-                                text-xs
-                                text-[#677750]/50
-                                mb-1
-                              "
+                              text-xs
+                              text-[#677750]/50
+                              mb-1
+                            "
                       >
                         Cuenta Destino
                       </p>
 
                       <p
                         className="
-                                text-sm
-                                text-[#677750]/70
-                              "
+                              text-sm
+                              text-[#677750]/70
+                              break-all
+                            "
                       >
                         #{transaction.cuenta_destino_id}
                       </p>
                     </div>
 
-                    <div
-                      className="
-                              sm:col-span-2
-                            "
-                    >
+                    <div className="sm:col-span-2 min-w-0">
                       <p
                         className="
-                                text-xs
-                                text-[#677750]/50
-                                mb-1
-                              "
+                              text-xs
+                              text-[#677750]/50
+                              mb-1
+                            "
                       >
                         Fecha
                       </p>
 
                       <p
                         className="
-                                text-sm
-                                text-[#677750]/70
-                                break-words
-                              "
+                              text-sm
+                              text-[#677750]/70
+                              break-all
+                            "
                       >
                         {new Date(transaction.createdAt).toLocaleDateString()}
                       </p>
@@ -441,8 +453,8 @@ export const Transactions = () => {
           ) : (
             <div
               className="
-                  text-center
                   p-6
+                  text-center
                   text-sm
                   text-[#677750]/60
                 "
@@ -456,17 +468,16 @@ export const Transactions = () => {
 
         <div
           className="
-            hidden
-            lg:block
-            overflow-x-auto
-          "
+    hidden
+    2xl:block
+    w-full
+  "
         >
           <table
             className="
-              w-full
-              min-w-[1200px]
-              text-sm
-            "
+      w-full
+      text-sm
+    "
           >
             <thead
               className="
@@ -478,17 +489,17 @@ export const Transactions = () => {
               "
             >
               <tr>
-                <th className="p-4">ID</th>
+                <th className="p-4 whitespace-nowrap">ID</th>
 
-                <th className="p-4">Tipo</th>
+                <th className="p-4 whitespace-nowrap">Tipo</th>
 
-                <th className="p-4">Cuenta Origen</th>
+                <th className="p-4 whitespace-nowrap">Cuenta Origen</th>
 
-                <th className="p-4">Cuenta Destino</th>
+                <th className="p-4 whitespace-nowrap">Cuenta Destino</th>
 
-                <th className="p-4">Monto</th>
+                <th className="p-4 whitespace-nowrap">Monto</th>
 
-                <th className="p-4">Fecha</th>
+                <th className="p-4 whitespace-nowrap">Fecha</th>
               </tr>
             </thead>
 
@@ -498,8 +509,8 @@ export const Transactions = () => {
                   <td
                     colSpan="6"
                     className="
-                        text-center
                         p-6
+                        text-center
                         text-[#677750]/60
                       "
                   >
@@ -511,18 +522,19 @@ export const Transactions = () => {
                   <tr
                     key={transaction.id}
                     className="
-                          border-b
-                          border-[#677750]/5
-                          hover:bg-[#fffaf2]/50
-                          transition
-                        "
+                        border-b
+                        border-[#677750]/5
+                        hover:bg-[#fffaf2]/50
+                        transition
+                      "
                   >
                     <td
                       className="
-                            p-4
-                            font-medium
-                            text-[#677750]
-                          "
+                          p-4
+                          font-medium
+                          text-[#677750]
+                          whitespace-nowrap
+                        "
                     >
                       #{transaction.id}
                     </td>
@@ -530,13 +542,15 @@ export const Transactions = () => {
                     <td className="p-4">
                       <span
                         className="
-                              px-2 py-1
-                              rounded-full
-                              text-xs
-                              font-medium
-                              bg-[#677750]/10
-                              text-[#677750]
-                            "
+                            px-2
+                            py-1
+                            rounded-full
+                            text-xs
+                            font-medium
+                            bg-[#677750]/10
+                            text-[#677750]
+                            whitespace-nowrap
+                          "
                       >
                         {transaction.tipo}
                       </span>
@@ -544,37 +558,41 @@ export const Transactions = () => {
 
                     <td
                       className="
-                            p-4
-                            text-[#677750]/70
-                          "
+                          p-4
+                          text-[#677750]/70
+                          whitespace-nowrap
+                        "
                     >
                       #{transaction.cuenta_origen_id}
                     </td>
 
                     <td
                       className="
-                            p-4
-                            text-[#677750]/70
-                          "
+                          p-4
+                          text-[#677750]/70
+                          whitespace-nowrap
+                        "
                     >
                       #{transaction.cuenta_destino_id}
                     </td>
 
                     <td
                       className="
-                            p-4
-                            text-green-600
-                            font-semibold
-                          "
+                          p-4
+                          text-green-600
+                          font-semibold
+                          whitespace-nowrap
+                        "
                     >
                       Q{transaction.monto}
                     </td>
 
                     <td
                       className="
-                            p-4
-                            text-[#677750]/60
-                          "
+                          p-4
+                          text-[#677750]/60
+                          whitespace-nowrap
+                        "
                     >
                       {new Date(transaction.createdAt).toLocaleDateString()}
                     </td>
@@ -585,8 +603,8 @@ export const Transactions = () => {
                   <td
                     colSpan="6"
                     className="
-                        text-center
                         p-6
+                        text-center
                         text-[#677750]/60
                       "
                   >

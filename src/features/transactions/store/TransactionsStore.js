@@ -15,8 +15,6 @@ getTransactions: async () => {
 
     const { data } = await getTransactions();
 
-    console.log(data);
-
     set({
       transactions: data,
       isLoading: false,

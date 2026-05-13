@@ -3,27 +3,17 @@ import { CardModal } from "./CardModal.jsx";
 import { CardsStore } from "../store/CardsStore.js";
 
 export const Cards = () => {
+  const cards = CardsStore((state) => state.cards);
 
-  const cards = CardsStore(
-    (state) => state.cards
-  );
+  const getCards = CardsStore((state) => state.getCards);
 
-  const getCards = CardsStore(
-    (state) => state.getCards
-  );
+  const isLoading = CardsStore((state) => state.isLoading);
 
-  const isLoading = CardsStore(
-    (state) => state.isLoading
-  );
+  const [selectedCard, setSelectedCard] = useState(null);
 
-  const [selectedCard, setSelectedCard] =
-    useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [isModalOpen, setIsModalOpen] =
-    useState(false);
-
-  const [search, setSearch] =
-    useState("");
+  const [search, setSearch] = useState("");
 
   const [statusFilter, setStatusFilter] =
     useState("TODOS");
@@ -41,9 +31,7 @@ export const Cards = () => {
   ========================= */
 
   const filteredCards = useMemo(() => {
-
     return cards.filter((card) => {
-
       const matchesSearch =
         card.numero_tarjeta
           ?.toLowerCase()
@@ -55,10 +43,10 @@ export const Cards = () => {
           ? true
           : card.estado === statusFilter;
 
-      return matchesSearch && matchesStatus;
-
+      return (
+        matchesSearch && matchesStatus
+      );
     });
-
   }, [cards, search, statusFilter]);
 
   /* =========================
@@ -67,7 +55,8 @@ export const Cards = () => {
 
   const updatedSelectedCard = selectedCard
     ? cards.find(
-        (card) => card.id === selectedCard.id
+        (card) =>
+          card.id === selectedCard.id,
       )
     : null;
 
@@ -76,19 +65,15 @@ export const Cards = () => {
   ========================= */
 
   const openModal = (card) => {
-
     setSelectedCard(card);
 
     setIsModalOpen(true);
-
   };
 
   const closeModal = () => {
-
     setSelectedCard(null);
 
     setIsModalOpen(false);
-
   };
 
   /* =========================
@@ -96,9 +81,7 @@ export const Cards = () => {
   ========================= */
 
   const getStatusStyles = (status) => {
-
     switch (status) {
-
       case "PENDIENTE":
         return "bg-yellow-100 text-yellow-700";
 
@@ -116,14 +99,21 @@ export const Cards = () => {
 
       default:
         return "bg-gray-100 text-gray-700";
-
     }
-
   };
 
   return (
-    <div className="p-3 sm:p-4 md:p-6">
-
+    <div
+      className="
+        w-full
+        min-w-0
+        max-w-full
+        overflow-x-hidden
+        p-3
+        sm:p-4
+        md:p-6
+      "
+    >
       {/* HEADER */}
 
       <div
@@ -138,16 +128,14 @@ export const Cards = () => {
           sm:mb-8
         "
       >
-
         <div className="min-w-0">
-
           <h1
             className="
               text-2xl
               sm:text-3xl
               font-bold
               text-[#677750]
-              break-words
+              break-all
             "
           >
             Gestión de Tarjetas
@@ -163,9 +151,7 @@ export const Cards = () => {
           >
             Administra las tarjetas bancarias
           </p>
-
         </div>
-
       </div>
 
       {/* FILTERS */}
@@ -179,22 +165,22 @@ export const Cards = () => {
           p-4
           sm:p-5
           mb-6
+          overflow-hidden
         "
       >
-
         <div
           className="
-            grid
-            grid-cols-1
-            md:grid-cols-2
+            flex
+            flex-col
+            xl:flex-row
+            xl:items-end
             gap-4
+            w-full
           "
         >
-
           {/* SEARCH */}
 
-          <div className="min-w-0">
-
+          <div className="flex-1 min-w-0">
             <label
               className="
                 block
@@ -216,6 +202,7 @@ export const Cards = () => {
               }
               className="
                 w-full
+                min-w-0
                 border border-[#677750]/20
                 rounded-lg
                 px-3 py-2.5
@@ -226,13 +213,17 @@ export const Cards = () => {
                 focus:ring-[#677750]/30
               "
             />
-
           </div>
 
           {/* STATUS */}
 
-          <div className="min-w-0">
-
+          <div
+            className="
+              w-full
+              xl:w-[220px]
+              shrink-0
+            "
+          >
             <label
               className="
                 block
@@ -248,7 +239,9 @@ export const Cards = () => {
             <select
               value={statusFilter}
               onChange={(e) =>
-                setStatusFilter(e.target.value)
+                setStatusFilter(
+                  e.target.value,
+                )
               }
               className="
                 w-full
@@ -262,7 +255,6 @@ export const Cards = () => {
                 focus:ring-[#677750]/30
               "
             >
-
               <option value="TODOS">
                 Todos
               </option>
@@ -286,13 +278,42 @@ export const Cards = () => {
               <option value="RECHAZADA">
                 Rechazada
               </option>
-
             </select>
-
           </div>
 
-        </div>
+          {/* CLEAR FILTERS */}
 
+          <div
+            className="
+              w-full
+              xl:w-auto
+              xl:min-w-[120px]
+              shrink-0
+            "
+          >
+            <button
+              onClick={() => {
+                setSearch("");
+                setStatusFilter("TODOS");
+              }}
+              className="
+                w-full
+                xl:w-auto
+                px-4
+                py-2.5
+                rounded-lg
+                border
+                border-[#677750]/20
+                text-[#677750]
+                text-sm
+                hover:bg-[#677750]/10
+                transition
+              "
+            >
+              Limpiar
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* MODAL */}
@@ -312,9 +333,10 @@ export const Cards = () => {
           rounded-xl sm:rounded-2xl
           shadow-sm
           overflow-hidden
+          w-full
+          min-w-0
         "
       >
-
         {/* TABLE HEADER */}
 
         <div
@@ -325,7 +347,6 @@ export const Cards = () => {
             border-[#677750]/10
           "
         >
-
           <h2
             className="
               text-base
@@ -347,227 +368,233 @@ export const Cards = () => {
           >
             Tarjetas registradas en el sistema
           </p>
-
         </div>
 
         {/* MOBILE / TABLET */}
 
-        <div className="block lg:hidden">
+        <div className="block 2xl:hidden">
+          {isLoading ? (
+            <div
+              className="
+                text-center
+                p-8
+                text-sm
+                text-[#677750]/60
+              "
+            >
+              Cargando tarjetas...
+            </div>
+          ) : filteredCards.length > 0 ? (
+            <div className="divide-y divide-[#677750]/10">
+              {filteredCards.map((card) => (
+                <div
+                  key={card.id}
+                  onClick={() =>
+                    openModal(card)
+                  }
+                  className="
+                    p-4
+                    sm:p-5
+                    min-w-0
+                    cursor-pointer
+                    hover:bg-[#fffaf2]/50
+                    transition
 
-          {
-            isLoading ? (
+                    flex
+                    flex-col
+                    gap-5
+                  "
+                >
+                  {/* ID + ACCOUNT */}
 
-              <div
-                className="
-                  text-center
-                  p-8
-                  text-sm
-                  text-[#677750]/60
-                "
-              >
-                Cargando tarjetas...
-              </div>
-
-            ) : filteredCards.length > 0 ? (
-
-              <div className="divide-y divide-[#677750]/10">
-
-                {
-                  filteredCards.map((card) => (
-
-                    <div
-                      key={card.id}
-                      onClick={() => openModal(card)}
+                  <div
+                    className="
+                      flex
+                      flex-col
+                      sm:flex-row
+                      sm:items-center
+                      gap-2
+                      min-w-0
+                    "
+                  >
+                    <span
                       className="
-                        p-4
-                        space-y-4
-                        cursor-pointer
-                        hover:bg-[#fffaf2]/50
+                        text-sm
+                        font-semibold
+                        text-[#677750]
+                      "
+                    >
+                      #{card.id}
+                    </span>
+
+                    <span
+                      className="
+                        text-xs
+                        text-[#677750]/60
+                      "
+                    >
+                      Cuenta #
+                      {card.account_id}
+                    </span>
+                  </div>
+
+                  {/* NUMBER */}
+
+                  <div className="min-w-0">
+                    <p
+                      className="
+                        text-xs
+                        text-[#677750]/50
+                        mb-1
+                      "
+                    >
+                      Número
+                    </p>
+
+                    <p
+                      className="
+                        text-sm
+                        sm:text-base
+                        font-medium
+                        text-[#677750]
+                        break-all
+                      "
+                    >
+                      {card.numero_tarjeta}
+                    </p>
+                  </div>
+
+                  {/* TYPE + STATUS */}
+
+                  <div
+                    className="
+                      flex
+                      flex-col
+                      sm:flex-row
+                      sm:items-center
+                      gap-2
+                      min-w-0
+                    "
+                  >
+                    <span
+                      className="
+                        text-sm
+                        text-[#677750]/70
+                      "
+                    >
+                      {card.tipo}
+                    </span>
+
+                    <span
+                      className={`
+                        w-fit
+                        px-2 py-1
+                        rounded-full
+                        text-xs
+                        font-medium
+                        ${getStatusStyles(
+                          card.estado,
+                        )}
+                      `}
+                    >
+                      {card.estado}
+                    </span>
+                  </div>
+
+                  {/* EXPIRATION */}
+
+                  <div className="min-w-0">
+                    <p
+                      className="
+                        text-xs
+                        text-[#677750]/50
+                        mb-1
+                      "
+                    >
+                      Expiración
+                    </p>
+
+                    <p
+                      className="
+                        text-sm
+                        text-[#677750]/70
+                      "
+                    >
+                      {
+                        card.fecha_expiracion
+                      }
+                    </p>
+                  </div>
+
+                  {/* ACTION */}
+
+                  <div
+                    className="
+                      pt-2
+                      border-t
+                      border-[#677750]/10
+                      flex
+                      justify-stretch
+                      sm:justify-end
+                    "
+                  >
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+
+                        openModal(card);
+                      }}
+                      className="
+                        w-full
+                        sm:w-auto
+                        px-4
+                        py-2.5
+                        rounded-xl
+                        text-sm
+                        font-medium
+                        bg-[#677750]
+                        text-white
+                        hover:opacity-90
                         transition
                       "
                     >
-
-                      {/* ID + ACCOUNT */}
-
-                      <div
-                        className="
-                          flex
-                          flex-wrap
-                          items-center
-                          gap-2
-                        "
-                      >
-
-                        <span
-                          className="
-                            text-sm
-                            font-semibold
-                            text-[#677750]
-                          "
-                        >
-                          #{card.id}
-                        </span>
-
-                        <span
-                          className="
-                            text-xs
-                            text-[#677750]/60
-                          "
-                        >
-                          Cuenta #{card.account_id}
-                        </span>
-
-                      </div>
-
-                      {/* NUMBER */}
-
-                      <div>
-
-                        <p
-                          className="
-                            text-xs
-                            text-[#677750]/50
-                            mb-1
-                          "
-                        >
-                          Número
-                        </p>
-
-                        <p
-                          className="
-                            text-sm
-                            sm:text-base
-                            font-medium
-                            text-[#677750]
-                            break-words
-                          "
-                        >
-                          {card.numero_tarjeta}
-                        </p>
-
-                      </div>
-
-                      {/* TYPE + STATUS */}
-
-                      <div
-                        className="
-                          flex
-                          flex-wrap
-                          items-center
-                          gap-2
-                        "
-                      >
-
-                        <span
-                          className="
-                            text-sm
-                            text-[#677750]/70
-                          "
-                        >
-                          {card.tipo}
-                        </span>
-
-                        <span
-                          className={`
-                            px-2 py-1
-                            rounded-full
-                            text-xs
-                            font-medium
-                            ${getStatusStyles(card.estado)}
-                          `}
-                        >
-                          {card.estado}
-                        </span>
-
-                      </div>
-
-                      {/* EXPIRATION */}
-
-                      <div>
-
-                        <p
-                          className="
-                            text-xs
-                            text-[#677750]/50
-                            mb-1
-                          "
-                        >
-                          Expiración
-                        </p>
-
-                        <p
-                          className="
-                            text-sm
-                            text-[#677750]/70
-                          "
-                        >
-                          {card.fecha_expiracion}
-                        </p>
-
-                      </div>
-
-                      {/* ACTION */}
-
-                      <button
-                        onClick={(e) => {
-
-                          e.stopPropagation();
-
-                          openModal(card);
-
-                        }}
-                        className="
-                          w-full
-                          sm:w-auto
-                          px-4 py-2
-                          rounded-lg
-                          text-sm
-                          bg-[#677750]
-                          text-white
-                          hover:opacity-90
-                          transition
-                        "
-                      >
-                        Gestionar
-                      </button>
-
-                    </div>
-
-                  ))
-                }
-
-              </div>
-
-            ) : (
-
-              <div
-                className="
-                  text-center
-                  p-8
-                  text-sm
-                  text-[#677750]/60
-                "
-              >
-                No hay tarjetas disponibles
-              </div>
-
-            )
-          }
-
+                      Gestionar
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div
+              className="
+                text-center
+                p-8
+                text-sm
+                text-[#677750]/60
+              "
+            >
+              No hay tarjetas disponibles
+            </div>
+          )}
         </div>
 
         {/* DESKTOP TABLE */}
 
-        <div className="hidden lg:block overflow-x-auto">
-
+        <div
+          className="
+            hidden
+            2xl:block
+            w-full
+            overflow-x-auto
+          "
+        >
           <table
             className="
               w-full
               text-sm
-              min-w-[1000px]
+              min-w-[1100px]
             "
           >
-
             <thead
               className="
                 bg-[#677750]/5
@@ -577,199 +604,183 @@ export const Cards = () => {
                 border-[#677750]/10
               "
             >
-
               <tr>
-
-                <th className="p-4">
+                <th className="p-4 whitespace-nowrap">
                   ID
                 </th>
 
-                <th className="p-4">
+                <th className="p-4 whitespace-nowrap">
                   Cuenta
                 </th>
 
-                <th className="p-4">
+                <th className="p-4 whitespace-nowrap">
                   Número
                 </th>
 
-                <th className="p-4">
+                <th className="p-4 whitespace-nowrap">
                   Tipo
                 </th>
 
-                <th className="p-4">
+                <th className="p-4 whitespace-nowrap">
                   Expiración
                 </th>
 
-                <th className="p-4">
+                <th className="p-4 whitespace-nowrap">
                   Estado
                 </th>
 
-                <th className="p-4 text-center">
+                <th className="p-4 text-center whitespace-nowrap">
                   Acciones
                 </th>
-
               </tr>
-
             </thead>
 
             <tbody>
-
-              {
-                isLoading ? (
-
-                  <tr>
-
+              {isLoading ? (
+                <tr>
+                  <td
+                    colSpan="7"
+                    className="
+                      text-center
+                      p-8
+                      text-[#677750]/60
+                    "
+                  >
+                    Cargando tarjetas...
+                  </td>
+                </tr>
+              ) : filteredCards.length >
+                0 ? (
+                filteredCards.map((card) => (
+                  <tr
+                    key={card.id}
+                    onClick={() =>
+                      openModal(card)
+                    }
+                    className="
+                      border-b
+                      border-[#677750]/5
+                      hover:bg-[#fffaf2]/50
+                      transition
+                      cursor-pointer
+                    "
+                  >
                     <td
-                      colSpan="7"
                       className="
-                        text-center
-                        p-8
-                        text-[#677750]/60
+                        p-4
+                        font-medium
+                        text-[#677750]
+                        whitespace-nowrap
                       "
                     >
-                      Cargando tarjetas...
+                      #{card.id}
                     </td>
 
-                  </tr>
-
-                ) : filteredCards.length > 0 ? (
-
-                  filteredCards.map((card) => (
-
-                    <tr
-                      key={card.id}
-                      onClick={() => openModal(card)}
-                      className="
-                        border-b
-                        border-[#677750]/5
-                        hover:bg-[#fffaf2]/50
-                        transition
-                        cursor-pointer
-                      "
-                    >
-
-                      <td
-                        className="
-                          p-4
-                          font-medium
-                          text-[#677750]
-                        "
-                      >
-                        #{card.id}
-                      </td>
-
-                      <td
-                        className="
-                          p-4
-                          font-medium
-                          text-[#677750]
-                        "
-                      >
-                        #{card.account_id}
-                      </td>
-
-                      <td
-                        className="
-                          p-4
-                          font-medium
-                          text-[#677750]
-                          break-words
-                        "
-                      >
-                        {card.numero_tarjeta}
-                      </td>
-
-                      <td
-                        className="
-                          p-4
-                          text-[#677750]/70
-                        "
-                      >
-                        {card.tipo}
-                      </td>
-
-                      <td
-                        className="
-                          p-4
-                          text-[#677750]/60
-                        "
-                      >
-                        {card.fecha_expiracion}
-                      </td>
-
-                      <td className="p-4">
-
-                        <span
-                          className={`
-                            px-2 py-1
-                            rounded-full
-                            text-xs
-                            font-medium
-                            ${getStatusStyles(card.estado)}
-                          `}
-                        >
-                          {card.estado}
-                        </span>
-
-                      </td>
-
-                      <td className="p-4 text-center">
-
-                        <button
-                          onClick={(e) => {
-
-                            e.stopPropagation();
-
-                            openModal(card);
-
-                          }}
-                          className="
-                            px-3 py-1
-                            rounded-lg
-                            text-xs
-                            bg-[#677750]
-                            text-white
-                            hover:opacity-90
-                            transition
-                          "
-                        >
-                          Gestionar
-                        </button>
-
-                      </td>
-
-                    </tr>
-
-                  ))
-
-                ) : (
-
-                  <tr>
-
                     <td
-                      colSpan="7"
                       className="
-                        text-center
-                        p-8
-                        text-[#677750]/60
+                        p-4
+                        font-medium
+                        text-[#677750]
+                        whitespace-nowrap
                       "
                     >
-                      No hay tarjetas disponibles
+                      #
+                      {card.account_id}
                     </td>
 
+                    <td
+                      className="
+                        p-4
+                        font-medium
+                        text-[#677750]
+                        break-all
+                      "
+                    >
+                      {
+                        card.numero_tarjeta
+                      }
+                    </td>
+
+                    <td
+                      className="
+                        p-4
+                        font-medium
+                        text-[#677750]
+                        whitespace-nowrap
+                      "
+                    >
+                      {card.tipo}
+                    </td>
+
+                    <td
+                      className="
+                        p-4
+                        font-medium
+                        text-[#677750]
+                        whitespace-nowrap
+                      "
+                    >
+                      {
+                        card.fecha_expiracion
+                      }
+                    </td>
+
+                    <td className="p-4">
+                      <span
+                        className={`
+                          px-2 py-1
+                          rounded-full
+                          text-xs
+                          font-medium
+                          ${getStatusStyles(
+                            card.estado,
+                          )}
+                        `}
+                      >
+                        {card.estado}
+                      </span>
+                    </td>
+
+                    <td className="p-4 text-center">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+
+                          openModal(card);
+                        }}
+                        className="
+                          px-3 py-1
+                          rounded-lg
+                          text-xs
+                          bg-[#677750]
+                          text-white
+                          hover:opacity-90
+                          transition
+                        "
+                      >
+                        Gestionar
+                      </button>
+                    </td>
                   </tr>
-
-                )
-              }
-
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="7"
+                    className="
+                      text-center
+                      p-8
+                      text-[#677750]/60
+                    "
+                  >
+                    No hay tarjetas disponibles
+                  </td>
+                </tr>
+              )}
             </tbody>
-
           </table>
-
         </div>
-
       </div>
-
     </div>
   );
 };

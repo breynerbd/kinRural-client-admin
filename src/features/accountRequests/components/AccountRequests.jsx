@@ -17,6 +17,7 @@ export const AccountRequests = () => {
   // =========================
   // LOAD REQUESTS
   // =========================
+
   useEffect(() => {
     getAccountRequests();
   }, [getAccountRequests]);
@@ -24,30 +25,37 @@ export const AccountRequests = () => {
   // =========================
   // FILTERS
   // =========================
+
   const filteredRequests = useMemo(() => {
     if (statusFilter === "TODOS") {
       return accountRequests;
     }
 
-    return accountRequests.filter((request) => request.status === statusFilter);
+    return accountRequests.filter(
+      (request) => request.status === statusFilter,
+    );
   }, [accountRequests, statusFilter]);
 
   // =========================
   // MODAL
   // =========================
+
   const openModal = (request) => {
     setSelectedRequest(request);
+
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setSelectedRequest(null);
+
     setIsModalOpen(false);
   };
 
   // =========================
   // STATUS STYLES
   // =========================
+
   const statusStyles = {
     PENDIENTE: "bg-yellow-100 text-yellow-700",
     APROBADA: "bg-green-100 text-green-700",
@@ -55,28 +63,39 @@ export const AccountRequests = () => {
   };
 
   return (
-    <div className="p-3 sm:p-4 md:p-6">
+    <div
+      className="
+        w-full
+        min-w-0
+        overflow-x-hidden
+        p-3
+        sm:p-4
+        md:p-6
+      "
+    >
       {/* HEADER */}
+
       <div
         className="
           flex
           flex-col
-          lg:flex-row
-          lg:items-center
-          lg:justify-between
+          xl:flex-row
+          xl:items-center
+          xl:justify-between
           gap-4
           mb-6
           sm:mb-8
         "
       >
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h1
             className="
               text-2xl
               sm:text-3xl
               font-bold
               text-[#677750]
-              break-words
+              break-all
+              leading-tight
             "
           >
             Solicitudes de Cuenta
@@ -88,6 +107,7 @@ export const AccountRequests = () => {
               sm:text-sm
               text-[#677750]/70
               mt-1
+              break-all
             "
           >
             Gestiona solicitudes de creación de cuentas
@@ -95,16 +115,19 @@ export const AccountRequests = () => {
         </div>
 
         {/* FILTER */}
+
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           className="
             w-full
-            sm:w-auto
+            sm:w-full
+            md:w-auto
             border
             border-[#677750]/20
-            rounded-lg
-            px-4 py-2.5
+            rounded-xl
+            px-4
+            py-3
             text-sm
             sm:text-base
             text-[#677750]
@@ -124,6 +147,7 @@ export const AccountRequests = () => {
       </div>
 
       {/* MODAL */}
+
       <AccountRequestModal
         isOpen={isModalOpen}
         onClose={closeModal}
@@ -131,17 +155,21 @@ export const AccountRequests = () => {
       />
 
       {/* TABLE */}
+
       <div
         className="
           bg-white
           border
           border-[#677750]/10
-          rounded-xl
+          rounded-2xl
           shadow-sm
           overflow-hidden
+          w-full
+          min-w-0
         "
       >
         {/* TABLE HEADER */}
+
         <div
           className="
             p-4
@@ -156,6 +184,7 @@ export const AccountRequests = () => {
               sm:text-lg
               font-semibold
               text-[#677750]
+              break-all
             "
           >
             Lista de solicitudes
@@ -167,336 +196,448 @@ export const AccountRequests = () => {
               sm:text-sm
               text-[#677750]/70
               mt-1
+              break-all
             "
           >
             Solicitudes registradas en el sistema
           </p>
         </div>
 
-        <>
-          {/* MOBILE / TABLET CARDS */}
-          <div className="block lg:hidden">
-            {loading ? (
-              <div
-                className="
-      text-center
-      p-6
-      text-sm
-      text-[#677750]/70
-    "
-              >
-                Cargando solicitudes...
-              </div>
-            ) : filteredRequests.length > 0 ? (
-              <div className="divide-y divide-[#677750]/10">
-                {filteredRequests.map((request) => (
+        {/* MOBILE / TABLET CARDS */}
+
+        <div className="block 2xl:hidden">
+          {loading ? (
+            <div
+              className="
+                text-center
+                p-6
+                text-sm
+                text-[#677750]/70
+              "
+            >
+              Cargando solicitudes...
+            </div>
+          ) : filteredRequests.length > 0 ? (
+            <div className="divide-y divide-[#677750]/10">
+              {filteredRequests.map((request) => (
+                <div
+                  key={request.id}
+                  className="
+                    p-4
+                    sm:p-5
+                    space-y-4
+                    min-w-0
+                  "
+                >
+                  {/* TOP */}
+
                   <div
-                    key={request.id}
                     className="
-                              p-4
-                              space-y-4
-                            "
+                      flex
+                      flex-col
+                      sm:flex-row
+                      sm:items-start
+                      sm:justify-between
+                      gap-3
+                    "
                   >
                     {/* USER */}
-                    <div className="space-y-1">
+
+                    <div className="min-w-0 flex-1">
                       <p
                         className="
-                                  font-semibold
-                                  text-[#677750]
-                                  text-sm
-                                  sm:text-base
-                                  break-words
-                                "
+                          font-semibold
+                          text-[#677750]
+                          text-sm
+                          sm:text-base
+                          break-all
+                        "
                       >
                         {request.fullName}
                       </p>
 
                       <p
                         className="
-                                  text-xs
-                                  sm:text-sm
-                                  text-[#677750]/70
-                                  break-words
-                                "
+                          text-xs
+                          sm:text-sm
+                          text-[#677750]/70
+                          mt-1
+                          break-all
+                        "
                       >
                         DPI: {request.dpi}
                       </p>
                     </div>
 
-                    {/* EMAIL */}
-                    <div>
-                      <p className="text-xs text-[#677750]/50 mb-1">Correo</p>
+                    {/* STATUS */}
 
-                      <p
-                        className="
-                                  text-sm
-                                  text-[#677750]/80
-                                  break-words
-                                "
-                      >
-                        {request.email}
-                      </p>
-                    </div>
-
-                    {/* TYPE + STATUS */}
                     <div
                       className="
-                                flex
-                                flex-wrap
-                                items-center
-                                gap-2
-                              "
+                        flex
+                        flex-wrap
+                        items-center
+                        gap-2
+                      "
                     >
                       <span
                         className={`
-                                  px-2 py-1
-                                  rounded-full
-                                  text-xs
-                                  font-medium
-                                  ${
-                                    request.tipo === "AHORRO"
-                                      ? "bg-green-100 text-green-700"
-                                      : "bg-blue-100 text-blue-700"
-                                  }
-                                `}
+                          px-3 py-1
+                          rounded-full
+                          text-xs
+                          font-medium
+                          whitespace-nowrap
+                          ${
+                            request.tipo === "AHORRO"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-blue-100 text-blue-700"
+                          }
+                        `}
                       >
                         {request.tipo}
                       </span>
 
                       <span
                         className={`
-                                  px-2 py-1
-                                  rounded-full
-                                  text-xs
-                                  font-medium
-                                  ${statusStyles[request.status]}
-                                `}
+                          px-3 py-1
+                          rounded-full
+                          text-xs
+                          font-medium
+                          whitespace-nowrap
+                          ${statusStyles[request.status]}
+                        `}
                       >
                         {request.status}
                       </span>
                     </div>
+                  </div>
 
-                    {/* DATE */}
+                  {/* EMAIL */}
+
+                  <div className="min-w-0">
+                    <p
+                      className="
+                        text-xs
+                        text-[#677750]/50
+                        mb-1
+                      "
+                    >
+                      Correo
+                    </p>
+
+                    <p
+                      className="
+                        text-sm
+                        text-[#677750]/80
+                        break-all
+                      "
+                    >
+                      {request.email}
+                    </p>
+                  </div>
+
+                  {/* DETAILS */}
+
+                  <div
+                    className="
+                      grid
+                      grid-cols-1
+                      sm:grid-cols-2
+                      gap-4
+                    "
+                  >
                     <div>
-                      <p className="text-xs text-[#677750]/50 mb-1">Fecha</p>
+                      <p
+                        className="
+                          text-xs
+                          text-[#677750]/50
+                          mb-1
+                        "
+                      >
+                        Fecha
+                      </p>
 
                       <p
                         className="
-                                  text-sm
-                                  text-[#677750]/70
-                                "
+                          text-sm
+                          text-[#677750]/70
+                        "
                       >
-                        {new Date(request.createdAt).toLocaleDateString()}
+                        {new Date(
+                          request.createdAt,
+                        ).toLocaleDateString()}
                       </p>
                     </div>
+                  </div>
 
-                    {/* ACTION */}
+                  {/* ACTION */}
+                  <div
+                    className="
+                      pt-2
+                      border-t
+                      border-[#677750]/10
+                      flex
+                      justify-stretch
+                      sm:justify-end
+                    "
+                  >
                     <button
                       onClick={() => openModal(request)}
                       className="
-  px-3 py-1
-  text-xs
-  rounded
-  bg-[#677750]
-  text-white
-  hover:opacity-90
-  transition
-"
+                        w-full
+                        sm:w-auto
+                        px-4
+                        py-2.5
+                        rounded-xl
+                        text-sm
+                        font-medium
+                        bg-[#677750]
+                        text-white
+                        hover:opacity-90
+                        transition
+                      "
                     >
                       Gestionar
                     </button>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div
-                className="
-                        text-center
-                        p-8
-                        text-sm
-                        text-[#677750]/70
-                      "
-              >
-                No hay solicitudes registradas
-              </div>
-            )}
-          </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div
+              className="
+                text-center
+                p-8
+                text-sm
+                text-[#677750]/70
+              "
+            >
+              No hay solicitudes registradas
+            </div>
+          )}
+        </div>
 
-          {/* DESKTOP TABLE */}
-          <div className="hidden lg:block overflow-x-auto">
-            <table className="w-full text-sm min-w-[1000px]">
-              <thead
-                className="
-                  text-left
-                  text-[#677750]/70
-                  border-b
-                  border-[#677750]/10
-                  bg-[#677750]/5
-                "
-              >
+        {/* DESKTOP TABLE */}
+
+        <div
+          className="
+            hidden
+            2xl:block
+            w-full
+          "
+        >
+          <table
+            className="
+              w-full
+              text-sm
+              table-fixed
+            "
+          >
+            <thead
+              className="
+                text-left
+                text-[#677750]/70
+                border-b
+                border-[#677750]/10
+                bg-[#677750]/5
+              "
+            >
+              <tr>
+                <th className="p-4 w-[24%] whitespace-nowrap">
+                  Solicitante
+                </th>
+
+                <th className="p-4 w-[30%] whitespace-nowrap">
+                  Correo
+                </th>
+
+                <th className="p-4 w-[12%] whitespace-nowrap">
+                  Tipo
+                </th>
+
+                <th className="p-4 w-[14%] whitespace-nowrap">
+                  Estado
+                </th>
+
+                <th className="p-4 w-[12%] whitespace-nowrap">
+                  Fecha
+                </th>
+
+                <th className="p-4 w-[8%] text-center whitespace-nowrap">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {loading ? (
                 <tr>
-                  <th className="p-4">Solicitante</th>
-
-                  <th className="p-4">Correo</th>
-
-                  <th className="p-4">Tipo</th>
-
-                  <th className="p-4">Estado</th>
-
-                  <th className="p-4">Fecha</th>
-
-                  <th className="p-4 text-center">Acciones</th>
+                  <td
+                    colSpan="6"
+                    className="
+                      text-center
+                      p-8
+                      text-[#677750]/70
+                    "
+                  >
+                    Cargando solicitudes...
+                  </td>
                 </tr>
-              </thead>
+              ) : filteredRequests.length > 0 ? (
+                filteredRequests.map((request) => (
+                  <tr
+                    key={request.id}
+                    className="
+                      border-b
+                      border-[#677750]/5
+                      hover:bg-[#677750]/5
+                      transition
+                    "
+                  >
+                    {/* USER */}
 
-              <tbody>
-                {loading ? (
-                  <tr>
-                    <td
-                      colSpan="6"
-                      className="
-        text-center
-        p-8
-        text-[#677750]/70
-      "
-                    >
-                      Cargando solicitudes...
-                    </td>
-                  </tr>
-                ) : filteredRequests.length > 0 ? (
-                  filteredRequests.map((request) => (
-                    <tr
-                      key={request.id}
-                      className="
-                              border-b
-                              border-[#677750]/5
-                              hover:bg-[#677750]/5
-                              transition
-                            "
-                    >
-                      {/* USER */}
-                      <td className="p-4">
-                        <div>
-                          <p
-                            className="
-                                    font-medium
-                                    text-[#677750]
-                                    break-words
-                                  "
-                          >
-                            {request.fullName}
-                          </p>
-
-                          <p
-                            className="
-                                    text-xs
-                                    text-[#677750]/70
-                                  "
-                          >
-                            DPI: {request.dpi}
-                          </p>
-                        </div>
-                      </td>
-
-                      {/* EMAIL */}
-                      <td
-                        className="
-                                p-4
-                                text-[#677750]/70
-                                break-words
-                              "
-                      >
-                        {request.email}
-                      </td>
-
-                      {/* ACCOUNT TYPE */}
-                      <td className="p-4">
-                        <span
-                          className={`
-                                  px-2 py-1
-                                  rounded-full
-                                  text-xs
-                                  font-medium
-                                  ${
-                                    request.tipo === "AHORRO"
-                                      ? "bg-green-100 text-green-700"
-                                      : "bg-blue-100 text-blue-700"
-                                  }
-                                `}
-                        >
-                          {request.tipo}
-                        </span>
-                      </td>
-
-                      {/* STATUS */}
-                      <td className="p-4">
-                        <span
-                          className={`
-                                  px-2 py-1
-                                  rounded-full
-                                  text-xs
-                                  font-medium
-                                  ${statusStyles[request.status]}
-                                `}
-                        >
-                          {request.status}
-                        </span>
-                      </td>
-
-                      {/* DATE */}
-                      <td
-                        className="
-                                p-4
-                                text-[#677750]/70
-                              "
-                      >
-                        {new Date(request.createdAt).toLocaleDateString()}
-                      </td>
-
-                      {/* ACTIONS */}
-                      <td className="p-4">
-                        <div
+                    <td className="p-4 align-top">
+                      <div className="min-w-0">
+                        <p
                           className="
-                                  flex
-                                  justify-center
-                                "
+                            font-medium
+                            text-[#677750]
+                            break-all
+                          "
                         >
-                          <button
-                            onClick={() => openModal(request)}
-                            className="
-  px-3 py-1
-  text-xs
-  rounded
-  bg-[#677750]
-  text-white
-  hover:opacity-90
-  transition
-"
-                          >
-                            Gestionar
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
+                          {request.fullName}
+                        </p>
+
+                        <p
+                          className="
+                            text-xs
+                            text-[#677750]/70
+                            break-all
+                            mt-1
+                          "
+                        >
+                          DPI: {request.dpi}
+                        </p>
+                      </div>
+                    </td>
+
+                    {/* EMAIL */}
+
                     <td
-                      colSpan="6"
                       className="
-                              text-center
-                              p-10
-                              text-[#677750]/70
-                            "
+                        p-4
+                        text-[#677750]/70
+                        break-all
+                        align-top
+                      "
                     >
-                      No hay solicitudes registradas
+                      {request.email}
+                    </td>
+
+                    {/* ACCOUNT TYPE */}
+
+                    <td className="p-4 align-top">
+                      <span
+                        className={`
+                          px-2 py-1
+                          rounded-full
+                          text-xs
+                          font-medium
+                          whitespace-nowrap
+                          ${
+                            request.tipo === "AHORRO"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-blue-100 text-blue-700"
+                          }
+                        `}
+                      >
+                        {request.tipo}
+                      </span>
+                    </td>
+
+                    {/* STATUS */}
+
+                    <td className="p-4 align-top">
+                      <span
+                        className={`
+                          px-2 py-1
+                          rounded-full
+                          text-xs
+                          font-medium
+                          whitespace-nowrap
+                          ${statusStyles[request.status]}
+                        `}
+                      >
+                        {request.status}
+                      </span>
+                    </td>
+
+                    {/* DATE */}
+
+                    <td
+                      className="
+                        p-4
+                        text-[#677750]/70
+                        whitespace-nowrap
+                        align-top
+                      "
+                    >
+                      {new Date(
+                        request.createdAt,
+                      ).toLocaleDateString()}
+                    </td>
+
+                    {/* ACTIONS */}
+
+                    <td className="p-4 align-middle">
+                  <div
+                    className="
+                      pt-2
+                      border-t
+                      border-[#677750]/10
+                      flex
+                      justify-stretch
+                      sm:justify-end
+                    "
+                  >
+                        <button
+                          onClick={() => openModal(request)}
+                          className="
+                        w-full
+                        sm:w-auto
+                        px-4
+                        py-2.5
+                        rounded-xl
+                        text-sm
+                        font-medium
+                        bg-[#677750]
+                        text-white
+                        hover:opacity-90
+                        transition
+                          "
+                        >
+                          Gestionar
+                        </button>
+                      </div>
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="6"
+                    className="
+                      text-center
+                      p-10
+                      text-[#677750]/70
+                    "
+                  >
+                    No hay solicitudes registradas
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
