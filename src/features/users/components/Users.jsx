@@ -5,69 +5,49 @@ import { showConfirmToast } from "../../auth/components/ConfirmModal";
 import { showError, showSuccess } from "../../../shared/utils/toast";
 
 export const Users = () => {
-  const { users, getUsers, deleteUser, loading } =
-    useUsersStore();
+  const { users, getUsers, deleteUser, loading } = useUsersStore();
 
   const [openModal, setOpenModal] = useState(false);
 
-  const [selectedUser, setSelectedUser] =
-    useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const [search, setSearch] = useState("");
 
-  const [roleFilter, setRoleFilter] =
-    useState("");
+  const [roleFilter, setRoleFilter] = useState("");
 
-  const [minIncome, setMinIncome] =
-    useState("");
+  const [minIncome, setMinIncome] = useState("");
 
-  const [maxIncome, setMaxIncome] =
-    useState("");
+  const [maxIncome, setMaxIncome] = useState("");
 
   // ================= LOAD =================
 
   useEffect(() => {
     getUsers();
-  }, [getUsers]);
+  }, []);
 
   // ================= FILTER =================
 
-  const filteredUsers = users
-    .filter((user) => {
-      const fullName =
-        `${user.nombre} ${user.apellido}`.toLowerCase();
+  const filteredUsers = users.filter((user) => {
+    // 1. Filtro de búsqueda por texto
+    const fullName = `${user.nombre} ${user.apellido}`.toLowerCase();
+    const matchesSearch =
+      fullName.includes(search.toLowerCase()) ||
+      user.correo?.toLowerCase().includes(search.toLowerCase()) ||
+      user.id?.toString().includes(search);
 
-      return (
-        fullName.includes(search.toLowerCase()) ||
-        user.correo
-          ?.toLowerCase()
-          .includes(search.toLowerCase()) ||
-        user.id?.toString().includes(search)
-      );
-    })
-    .filter((user) => {
-      if (
-        roleFilter &&
-        user.role_id.toString() !== roleFilter
-      )
-        return false;
+    if (!matchesSearch) return false;
 
-      if (
-        minIncome &&
-        user.ingresos_mensuales <
-          Number(minIncome)
-      )
-        return false;
+    // 2. Filtros de Rol e Ingresos
+    if (roleFilter && user.role !== roleFilter) return false;
 
-      if (
-        maxIncome &&
-        user.ingresos_mensuales >
-          Number(maxIncome)
-      )
-        return false;
+    if (minIncome && Number(user.ingresos_mensuales) < Number(minIncome))
+      return false;
 
-      return true;
-    });
+    if (maxIncome && Number(user.ingresos_mensuales) > Number(maxIncome))
+      return false;
+
+    return true;
+  });
 
   // ================= DELETE =================
 
@@ -79,9 +59,7 @@ export const Users = () => {
         try {
           await deleteUser(id);
 
-          showSuccess(
-            "Usuario eliminado correctamente",
-          );
+          showSuccess("Usuario eliminado correctamente");
         } catch {
           showError("Error al eliminar usuario");
         }
@@ -164,10 +142,10 @@ export const Users = () => {
 
       {/* SEARCH + FILTERS */}
 
-{/* SEARCH + FILTERS */}
+      {/* SEARCH + FILTERS */}
 
-<div
-  className="
+      <div
+        className="
     bg-white
     border border-[#677750]/10
     rounded-2xl
@@ -177,37 +155,37 @@ export const Users = () => {
     mb-6
     overflow-hidden
   "
->
-  <div
-    className="
+      >
+        <div
+          className="
       flex
       flex-col
       xl:flex-row
       xl:items-end
       gap-4
     "
-  >
-    {/* SEARCH */}
+        >
+          {/* SEARCH */}
 
-    <div className="flex-1 min-w-0">
-      <label
-        className="
+          <div className="flex-1 min-w-0">
+            <label
+              className="
           text-xs
           sm:text-sm
           text-[#677750]/60
           block
           mb-1
         "
-      >
-        Buscar usuario
-      </label>
+            >
+              Buscar usuario
+            </label>
 
-      <input
-        type="text"
-        placeholder="Nombre, correo o ID"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="
+            <input
+              type="text"
+              placeholder="Nombre, correo o ID"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="
           w-full
           min-w-0
           border
@@ -221,34 +199,34 @@ export const Users = () => {
           focus:ring-2
           focus:ring-[#677750]/40
         "
-      />
-    </div>
+            />
+          </div>
 
-    {/* ROL */}
+          {/* ROL */}
 
-    <div
-      className="
+          <div
+            className="
         w-full
         xl:w-[180px]
         shrink-0
       "
-    >
-      <label
-        className="
+          >
+            <label
+              className="
           text-xs
           sm:text-sm
           text-[#677750]/60
           block
           mb-1
         "
-      >
-        Rol
-      </label>
+            >
+              Rol
+            </label>
 
-      <select
-        value={roleFilter}
-        onChange={(e) => setRoleFilter(e.target.value)}
-        className="
+            <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="
           w-full
           border
           border-[#677750]/20
@@ -260,48 +238,42 @@ export const Users = () => {
           focus:ring-2
           focus:ring-[#677750]/40
         "
-      >
-        <option value="">Todos</option>
+            >
+              <option value="">Todos</option>
 
-        <option value="1">
-          ADMIN
-        </option>
+              <option value="ADMIN">ADMIN</option>
 
-        <option value="2">
-          USUARIO
-        </option>
-      </select>
-    </div>
+              <option value="USER">USUARIO</option>
+            </select>
+          </div>
 
-    {/* INGRESO MIN */}
+          {/* INGRESO MIN */}
 
-    <div
-      className="
+          <div
+            className="
         w-full
         xl:w-[180px]
         shrink-0
       "
-    >
-      <label
-        className="
+          >
+            <label
+              className="
           text-xs
           sm:text-sm
           text-[#677750]/60
           block
           mb-1
         "
-      >
-        Ingreso mínimo
-      </label>
+            >
+              Ingreso mínimo
+            </label>
 
-      <input
-        type="number"
-        placeholder="Q0"
-        value={minIncome}
-        onChange={(e) =>
-          setMinIncome(e.target.value)
-        }
-        className="
+            <input
+              type="number"
+              placeholder="Q0"
+              value={minIncome}
+              onChange={(e) => setMinIncome(e.target.value)}
+              className="
           w-full
           border
           border-[#677750]/20
@@ -313,38 +285,36 @@ export const Users = () => {
           focus:ring-2
           focus:ring-[#677750]/40
         "
-      />
-    </div>
+            />
+          </div>
 
-    {/* INGRESO MAX */}
+          {/* INGRESO MAX */}
 
-    <div
-      className="
+          <div
+            className="
         w-full
         xl:w-[180px]
         shrink-0
       "
-    >
-      <label
-        className="
+          >
+            <label
+              className="
           text-xs
           sm:text-sm
           text-[#677750]/60
           block
           mb-1
         "
-      >
-        Ingreso máximo
-      </label>
+            >
+              Ingreso máximo
+            </label>
 
-      <input
-        type="number"
-        placeholder="Q10000"
-        value={maxIncome}
-        onChange={(e) =>
-          setMaxIncome(e.target.value)
-        }
-        className="
+            <input
+              type="number"
+              placeholder="Q10000"
+              value={maxIncome}
+              onChange={(e) => setMaxIncome(e.target.value)}
+              className="
           w-full
           border
           border-[#677750]/20
@@ -356,19 +326,19 @@ export const Users = () => {
           focus:ring-2
           focus:ring-[#677750]/40
         "
-      />
-    </div>
+            />
+          </div>
 
-    {/* LIMPIAR */}
+          {/* LIMPIAR */}
 
-    <button
-      onClick={() => {
-        setSearch("");
-        setRoleFilter("");
-        setMinIncome("");
-        setMaxIncome("");
-      }}
-      className="
+          <button
+            onClick={() => {
+              setSearch("");
+              setRoleFilter("");
+              setMinIncome("");
+              setMaxIncome("");
+            }}
+            className="
         w-full
         xl:w-auto
         xl:min-w-[120px]
@@ -383,11 +353,11 @@ export const Users = () => {
         hover:bg-[#677750]/10
         transition
       "
-    >
-      Limpiar
-    </button>
-  </div>
-</div>
+          >
+            Limpiar
+          </button>
+        </div>
+      </div>
 
       {/* MODAL */}
 
@@ -509,8 +479,7 @@ export const Users = () => {
                           break-words
                         "
                       >
-                        {user.nombre}{" "}
-                        {user.apellido}
+                        {user.nombre} {user.apellido}
                       </p>
                     </div>
 
@@ -608,9 +577,10 @@ export const Users = () => {
                           "
                         >
                           Q
-                          {
-                            user.ingresos_mensuales
-                          }
+                          {new Intl.NumberFormat("es-GT", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          }).format(Number(user.ingresos_mensuales))}
                         </p>
                       </div>
 
@@ -637,9 +607,7 @@ export const Users = () => {
                             text-blue-700
                           "
                         >
-                          {user.role_id === 1
-                            ? "ADMIN"
-                            : "USUARIO"}
+                          {user.role === "ADMIN" ? "ADMIN" : "USUARIO"}
                         </span>
                       </div>
                     </div>
@@ -718,10 +686,7 @@ export const Users = () => {
                         transition
                       "
                       onClick={() =>
-                        handleDelete(
-                          user.id,
-                          `${user.nombre} ${user.apellido}`,
-                        )
+                        handleDelete(user.id, `${user.nombre} ${user.apellido}`)
                       }
                     >
                       Eliminar
@@ -758,41 +723,23 @@ export const Users = () => {
               "
             >
               <tr>
-                <th className="p-4 w-[5%]">
-                  ID
-                </th>
+                <th className="p-4 w-[5%]">ID</th>
 
-                <th className="p-4 w-[15%]">
-                  Nombre
-                </th>
+                <th className="p-4 w-[15%]">Nombre</th>
 
-                <th className="p-4 w-[10%]">
-                  DPI
-                </th>
+                <th className="p-4 w-[10%]">DPI</th>
 
-                <th className="p-4 w-[18%]">
-                  Correo
-                </th>
+                <th className="p-4 w-[18%]">Correo</th>
 
-                <th className="p-4 w-[10%]">
-                  Teléfono
-                </th>
+                <th className="p-4 w-[10%]">Teléfono</th>
 
-                <th className="p-4 w-[17%]">
-                  Dirección
-                </th>
+                <th className="p-4 w-[17%]">Dirección</th>
 
-                <th className="p-4 w-[10%]">
-                  Ingresos
-                </th>
+                <th className="p-4 w-[10%]">Ingresos</th>
 
-                <th className="p-4 w-[7%]">
-                  Rol
-                </th>
+                <th className="p-4 w-[7%]">Rol</th>
 
-                <th className="p-4 text-center w-[8%]">
-                  Acciones
-                </th>
+                <th className="p-4 text-center w-[8%]">Acciones</th>
               </tr>
             </thead>
 
@@ -821,9 +768,7 @@ export const Users = () => {
                       transition
                     "
                   >
-                    <td className="p-4">
-                      #{user.id}
-                    </td>
+                    <td className="p-4">#{user.id}</td>
 
                     <td
                       className="
@@ -832,13 +777,10 @@ export const Users = () => {
                         text-[#677750]
                       "
                     >
-                      {user.nombre}{" "}
-                      {user.apellido}
+                      {user.nombre} {user.apellido}
                     </td>
 
-                    <td className="p-4">
-                      {user.dpi}
-                    </td>
+                    <td className="p-4">{user.dpi}</td>
 
                     <td
                       className="
@@ -849,9 +791,7 @@ export const Users = () => {
                       {user.correo}
                     </td>
 
-                    <td className="p-4">
-                      {user.telefono}
-                    </td>
+                    <td className="p-4">{user.telefono}</td>
 
                     <td
                       className="
@@ -869,10 +809,7 @@ export const Users = () => {
                         font-semibold
                       "
                     >
-                      Q
-                      {
-                        user.ingresos_mensuales
-                      }
+                      Q{user.ingresos_mensuales}
                     </td>
 
                     <td className="p-4">
@@ -887,9 +824,7 @@ export const Users = () => {
                           text-blue-700
                         "
                       >
-                        {user.role_id === 1
-                          ? "ADMIN"
-                          : "USUARIO"}
+                        {user.role === "ADMIN" ? "ADMIN" : "USUARIO"}
                       </span>
                     </td>
 

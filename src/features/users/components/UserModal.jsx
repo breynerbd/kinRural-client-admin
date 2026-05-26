@@ -27,7 +27,7 @@ export const UserModal = ({ isOpen, onClose, user }) => {
           telefono: user.telefono,
           direccion: user.direccion,
           ingresos_mensuales: user.ingresos_mensuales,
-          role_id: user.role_id,
+          role: user.role,
         });
       } else {
         reset({
@@ -38,7 +38,7 @@ export const UserModal = ({ isOpen, onClose, user }) => {
           telefono: "",
           direccion: "",
           ingresos_mensuales: "",
-          role_id: "",
+          role: "",
           username: "",
           password: "",
         });
@@ -293,20 +293,18 @@ export const UserModal = ({ isOpen, onClose, user }) => {
 
               <select
                 className="input"
-                {...register("role_id", {
+                {...register("role", {
                   required: "El rol es obligatorio",
                 })}
               >
                 <option value="">Seleccione un rol</option>
 
-                <option value="1">Admin</option>
+                <option value="ADMIN">ADMINISTRADOR</option>
 
-                <option value="2">Usuario</option>
+                <option value="USER">USUARIO</option>
               </select>
 
-              {errors.role_id && (
-                <p className="error">{errors.role_id.message}</p>
-              )}
+              {errors.role && <p className="error">{errors.role.message}</p>}
             </div>
 
             {!user && (

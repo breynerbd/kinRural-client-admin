@@ -13,7 +13,9 @@ export const useSaveUser = () => {
       telefono: data.telefono,
       direccion: data.direccion,
       ingresos_mensuales: Number(data.ingresos_mensuales),
-      role_id: Number(data.role_id),
+
+      // 👇 CAMBIO IMPORTANTE
+      role: data.role,
     };
 
     if (!userId) {

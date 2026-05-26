@@ -66,10 +66,13 @@ export const useAuthStore = create(
           const token = data.accessToken || data.token;
 
           const decoded = jwtDecode(token);
+          console.log("TOKEN DECODIFICADO:", decoded);
 
-          console.log(decoded);
-
-          const role = decoded.role;
+          const role =
+            decoded.role ||
+            decoded[
+              "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+            ];
           const username = decoded.username;
           const userEmail = decoded.email;
 
@@ -114,8 +117,7 @@ export const useAuthStore = create(
           };
         } catch (error) {
           const message =
-            error?.response?.data?.message ||
-            "Error al iniciar sesión";
+            error?.response?.data?.message || "Error al iniciar sesión";
 
           set({
             user: null,
@@ -137,6 +139,6 @@ export const useAuthStore = create(
     }),
     {
       name: "auth-store",
-    }
-  )
+    },
+  ),
 );

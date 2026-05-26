@@ -6,7 +6,6 @@ export const Sidebar = ({ open, setOpen }) => {
   const items = [
     { label: "Dashboard", path: "/dashboard" },
     { label: "Usuarios", path: "/dashboard/users" },
-    { label: "Roles", path: "/dashboard/roles" },
     { label: "Cuentas", path: "/dashboard/accounts" },
     {
       label: "Solicitudes de cuenta",
