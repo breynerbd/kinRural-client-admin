@@ -33,23 +33,23 @@ export const AccountModal = ({ isOpen, onClose }) => {
     }
   }, [isOpen, reset]);
 
-const { handleSubmit: submitWithFeedback } = useFormSubmit();
+  const { handleSubmit: submitWithFeedback } = useFormSubmit();
 
-const onSubmit = (data) =>
-  submitWithFeedback({
-    action: () => saveAccount(data),
-    successMsg: "Cuenta creada correctamente",
-    errorMsg: "Error al guardar cuenta",
-    reset,
-    onClose,
-  });
+  const onSubmit = (data) =>
+    submitWithFeedback({
+      action: () => saveAccount(data),
+      successMsg: "Cuenta creada correctamente",
+      errorMsg: "Error al guardar cuenta",
+      reset,
+      onClose,
+    });
 
   if (!isOpen) return null;
 
   return (
     <div
       className="
-        fixed inset-0 z-50
+        fixed inset-0 z-[70]
         bg-black/40 backdrop-blur-sm
         flex justify-center items-center
         p-2 sm:p-4

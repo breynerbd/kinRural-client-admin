@@ -16,7 +16,7 @@ export const useUsersStore = create((set) => ({
       set({ loading: true });
       const response = await getUsersRequest(page, limit);
       set({
-        users: response.data.data,
+        users: response.data.users,
         pagination: response.data.pagination,
       });
     } finally {
@@ -42,7 +42,7 @@ export const useUsersStore = create((set) => ({
       const response = await updateUserRequest(id, data);
       set((state) => ({
         users: state.users.map((user) =>
-          user.id === id ? response.data.user : user
+          user.id === id ? response.data.user : user,
         ),
       }));
     } finally {

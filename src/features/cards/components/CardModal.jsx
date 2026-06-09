@@ -2,18 +2,10 @@ import { useState } from "react";
 import { useSaveCard } from "../hooks/useSaveCard";
 import { showSuccess, showError } from "../../../shared/utils/toast";
 
+export const CardModal = ({ isOpen, onClose, card }) => {
+  const [loading, setLoading] = useState(false);
 
-export const CardModal = ({
-  isOpen,
-  onClose,
-  card,
-}) => {
-
-  const [loading, setLoading] =
-    useState(false);
-
-const { approveCard, activateCard, blockCard } = useSaveCard();
-
+  const { approveCard, activateCard, blockCard } = useSaveCard();
 
   if (!isOpen || !card) return null;
 
@@ -22,64 +14,62 @@ const { approveCard, activateCard, blockCard } = useSaveCard();
   ========================= */
 
   const onApprove = async () => {
-  try {
-    setLoading(true);
-    await approveCard(card.id, "APROBADA");
-    showSuccess("Tarjeta aprobada");
-    onClose();
-  } catch (error) {
-    showError(error?.response?.data?.message || "Error al procesar tarjeta");
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      setLoading(true);
+      await approveCard(card.id, "APROBADA");
+      showSuccess("Tarjeta aprobada");
+      onClose();
+    } catch (error) {
+      showError(error?.response?.data?.message || "Error al procesar tarjeta");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-const onReject = async () => {
-  try {
-    setLoading(true);
-    await approveCard(card.id, "RECHAZADA");
-    showSuccess("Tarjeta rechazada");
-    onClose();
-  } catch (error) {
-    showError(error?.response?.data?.message || "Error al procesar tarjeta");
-  } finally {
-    setLoading(false);
-  }
-};
+  const onReject = async () => {
+    try {
+      setLoading(true);
+      await approveCard(card.id, "RECHAZADA");
+      showSuccess("Tarjeta rechazada");
+      onClose();
+    } catch (error) {
+      showError(error?.response?.data?.message || "Error al procesar tarjeta");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-const onActivateCard = async () => {
-  try {
-    setLoading(true);
-    await activateCard(card.id);
-    showSuccess("Tarjeta activada");
-    onClose();
-  } catch (error) {
-    showError(error?.response?.data?.message || "Error al activar tarjeta");
-  } finally {
-    setLoading(false);
-  }
-};
+  const onActivateCard = async () => {
+    try {
+      setLoading(true);
+      await activateCard(card.id);
+      showSuccess("Tarjeta activada");
+      onClose();
+    } catch (error) {
+      showError(error?.response?.data?.message || "Error al activar tarjeta");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-const onBlockCard = async () => {
-  try {
-    setLoading(true);
-    await blockCard(card.id);
-    showSuccess("Tarjeta bloqueada");
-    onClose();
-  } catch (error) {
-    showError(error?.response?.data?.message || "Error al bloquear tarjeta");
-  } finally {
-    setLoading(false);
-  }
-};
+  const onBlockCard = async () => {
+    try {
+      setLoading(true);
+      await blockCard(card.id);
+      showSuccess("Tarjeta bloqueada");
+      onClose();
+    } catch (error) {
+      showError(error?.response?.data?.message || "Error al bloquear tarjeta");
+    } finally {
+      setLoading(false);
+    }
+  };
   /* =========================
      HELPERS
   ========================= */
 
   const getStatusStyles = (status) => {
-
     switch (status) {
-
       case "PENDIENTE":
         return "bg-yellow-100 text-yellow-700";
 
@@ -95,21 +85,18 @@ const onBlockCard = async () => {
 
       default:
         return "bg-gray-100 text-gray-700";
-
     }
-
   };
 
   return (
     <div
       className="
-        fixed inset-0 z-50
+        fixed inset-0 z-[70]
         bg-black/40 backdrop-blur-sm
         flex justify-center items-center
         p-2 sm:p-4
       "
     >
-
       <div
         className="
           bg-white
@@ -123,7 +110,6 @@ const onBlockCard = async () => {
           flex flex-col
         "
       >
-
         {/* HEADER */}
 
         <div
@@ -135,7 +121,6 @@ const onBlockCard = async () => {
             lg:px-6 lg:py-6
           "
         >
-
           <h2
             className="
               text-xl
@@ -157,7 +142,6 @@ const onBlockCard = async () => {
           >
             Gestiona la tarjeta seleccionada
           </p>
-
         </div>
 
         {/* CONTENT */}
@@ -170,7 +154,6 @@ const onBlockCard = async () => {
             space-y-5
           "
         >
-
           <div
             className="
               grid
@@ -179,9 +162,7 @@ const onBlockCard = async () => {
               gap-4
             "
           >
-
             <div className="min-w-0">
-
               <p
                 className="
                   text-xs
@@ -203,11 +184,9 @@ const onBlockCard = async () => {
               >
                 {card.numero_tarjeta}
               </p>
-
             </div>
 
             <div className="min-w-0">
-
               <p
                 className="
                   text-xs
@@ -229,11 +208,9 @@ const onBlockCard = async () => {
               >
                 {card.tipo}
               </p>
-
             </div>
 
             <div className="min-w-0">
-
               <p
                 className="
                   text-xs
@@ -254,11 +231,9 @@ const onBlockCard = async () => {
               >
                 {card.fecha_expiracion}
               </p>
-
             </div>
 
             <div className="min-w-0">
-
               <p
                 className="
                   text-xs
@@ -280,11 +255,9 @@ const onBlockCard = async () => {
               >
                 {card.account_id}
               </p>
-
             </div>
 
             <div className="min-w-0">
-
               <p
                 className="
                   text-xs
@@ -309,46 +282,40 @@ const onBlockCard = async () => {
               >
                 {card.estado}
               </span>
-
             </div>
-
           </div>
 
-          {
-            card.tipo === "CREDITO" && (
-              <div
-                className="
+          {card.tipo === "CREDITO" && (
+            <div
+              className="
                   border-t
                   border-[#677750]/10
                   pt-4
                 "
-              >
-
-                <p
-                  className="
+            >
+              <p
+                className="
                     text-xs
                     sm:text-sm
                     text-gray-500
                   "
-                >
-                  Límite de crédito
-                </p>
+              >
+                Límite de crédito
+              </p>
 
-                <p
-                  className="
+              <p
+                className="
                     font-semibold
                     text-green-600
                     text-lg
                     sm:text-xl
                     break-words
                   "
-                >
-                  Q{card.limite_credito || 0}
-                </p>
-
-              </div>
-            )
-          }
+              >
+                Q{card.limite_credito || 0}
+              </p>
+            </div>
+          )}
 
           {/* ACTIONS */}
 
@@ -365,7 +332,6 @@ const onBlockCard = async () => {
               border-[#677750]/10
             "
           >
-
             <button
               onClick={onClose}
               className="
@@ -386,10 +352,7 @@ const onBlockCard = async () => {
 
             <button
               onClick={onReject}
-              disabled={
-                loading ||
-                card.estado !== "PENDIENTE"
-              }
+              disabled={loading || card.estado !== "PENDIENTE"}
               className="
                 w-full
                 sm:w-auto
@@ -403,19 +366,12 @@ const onBlockCard = async () => {
                 disabled:cursor-not-allowed
               "
             >
-              {
-                loading
-                  ? "Procesando..."
-                  : "Rechazar"
-              }
+              {loading ? "Procesando..." : "Rechazar"}
             </button>
 
             <button
               onClick={onApprove}
-              disabled={
-                loading ||
-                card.estado !== "PENDIENTE"
-              }
+              disabled={loading || card.estado !== "PENDIENTE"}
               className="
                 w-full
                 sm:w-auto
@@ -429,19 +385,12 @@ const onBlockCard = async () => {
                 disabled:cursor-not-allowed
               "
             >
-              {
-                loading
-                  ? "Procesando..."
-                  : "Aprobar"
-              }
+              {loading ? "Procesando..." : "Aprobar"}
             </button>
 
             <button
               onClick={onActivateCard}
-              disabled={
-                loading ||
-                card.estado !== "APROBADA"
-              }
+              disabled={loading || card.estado !== "APROBADA"}
               className="
                 w-full
                 sm:w-auto
@@ -455,19 +404,12 @@ const onBlockCard = async () => {
                 disabled:cursor-not-allowed
               "
             >
-              {
-                loading
-                  ? "Procesando..."
-                  : "Activar"
-              }
+              {loading ? "Procesando..." : "Activar"}
             </button>
 
             <button
               onClick={onBlockCard}
-              disabled={
-                loading ||
-                card.estado !== "ACTIVA"
-              }
+              disabled={loading || card.estado !== "ACTIVA"}
               className="
                 w-full
                 sm:w-auto
@@ -481,19 +423,11 @@ const onBlockCard = async () => {
                 disabled:cursor-not-allowed
               "
             >
-              {
-                loading
-                  ? "Procesando..."
-                  : "Bloquear"
-              }
+              {loading ? "Procesando..." : "Bloquear"}
             </button>
-
           </div>
-
         </div>
-
       </div>
-
     </div>
   );
 };

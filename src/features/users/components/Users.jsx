@@ -3,6 +3,7 @@ import { useUsersStore } from "../store/userStore";
 import { UserModal } from "./UserModal";
 import { showConfirmToast } from "../../auth/components/ConfirmModal";
 import { showError, showSuccess } from "../../../shared/utils/toast";
+import { useAuthStore } from "../../auth/store/authStore";
 
 export const Users = () => {
   const { users, getUsers, deleteUser, loading } = useUsersStore();
@@ -18,6 +19,11 @@ export const Users = () => {
   const [minIncome, setMinIncome] = useState("");
 
   const [maxIncome, setMaxIncome] = useState("");
+  const currentUser = useAuthStore((state) => state.user);
+
+  const isMasterAdmin = currentUser?.role === "MASTER_ADMIN";
+
+  const isAdmin = currentUser?.role === "ADMIN";
 
   // ================= LOAD =================
 
@@ -48,6 +54,28 @@ export const Users = () => {
 
     return true;
   });
+
+  // ================= PERMISOS =================
+
+  // ADMIN:
+  // - solo puede manejar USER
+
+  // MASTER_ADMIN:
+  // - puede manejar todos
+
+  const canManageUser = (targetUser) => {
+    if (isMasterAdmin) return true;
+
+    if (isAdmin) {
+      return targetUser.role === "USER";
+    }
+
+    return false;
+  };
+
+  const canCreateAdmin = isMasterAdmin;
+
+  const canCreateMasterAdmin = isMasterAdmin;
 
   // ================= DELETE =================
 
@@ -82,65 +110,65 @@ export const Users = () => {
 
       <div
         className="
-          flex
-          flex-col
-          xl:flex-row
-          xl:justify-between
-          xl:items-center
-          gap-4
-          mb-6
-          sm:mb-8
-        "
+    flex
+    flex-col
+    xl:flex-row
+    xl:justify-between
+    xl:items-center
+    gap-4
+    mb-6
+    sm:mb-8
+  "
       >
         <div className="min-w-0">
           <h1
             className="
-              text-2xl
-              sm:text-3xl
-              font-bold
-              text-[#677750]
-              break-words
-            "
+        text-2xl
+        sm:text-3xl
+        font-bold
+        text-[#677750]
+        break-words
+      "
           >
             Gestión de Usuarios
           </h1>
 
           <p
             className="
-              text-xs
-              sm:text-sm
-              text-[#677750]/70
-              mt-1
-            "
+        text-xs
+        sm:text-sm
+        text-[#677750]/70
+        mt-1
+      "
           >
             Administra los usuarios registrados
           </p>
         </div>
 
-        <button
-          className="
-            w-full
-            sm:w-auto
-            bg-[#677750]
-            px-4
-            py-2.5
-            rounded-xl
-            text-white
-            text-sm
-            sm:text-base
-            hover:opacity-90
-            transition
-          "
-          onClick={() => {
-            setSelectedUser(null);
-            setOpenModal(true);
-          }}
-        >
-          + Crear Usuario
-        </button>
+        {(isAdmin || isMasterAdmin) && (
+          <button
+            className="
+        w-full
+        sm:w-auto
+        bg-[#677750]
+        px-4
+        py-2.5
+        rounded-xl
+        text-white
+        text-sm
+        sm:text-base
+        hover:opacity-90
+        transition
+      "
+            onClick={() => {
+              setSelectedUser(null);
+              setOpenModal(true);
+            }}
+          >
+            + Crear Usuario
+          </button>
+        )}
       </div>
-
-      {/* SEARCH + FILTERS */}
 
       {/* SEARCH + FILTERS */}
 
@@ -240,6 +268,8 @@ export const Users = () => {
         "
             >
               <option value="">Todos</option>
+
+              <option value="MASTER_ADMIN">MASTER ADMIN</option>
 
               <option value="ADMIN">ADMIN</option>
 
@@ -368,6 +398,8 @@ export const Users = () => {
           setSelectedUser(null);
         }}
         user={selectedUser}
+        canCreateAdmin={canCreateAdmin}
+        canCreateMasterAdmin={canCreateMasterAdmin}
       />
 
       {/* CONTAINER */}
@@ -607,7 +639,11 @@ export const Users = () => {
                             text-blue-700
                           "
                         >
-                          {user.role === "ADMIN" ? "ADMIN" : "USUARIO"}
+                          {user.role === "MASTER_ADMIN"
+                            ? "MASTER ADMIN"
+                            : user.role === "ADMIN"
+                              ? "ADMIN"
+                              : "USUARIO"}
                         </span>
                       </div>
                     </div>
@@ -641,56 +677,64 @@ export const Users = () => {
 
                   <div
                     className="
-                      pt-2
-                      border-t
-                      border-[#677750]/10
-                      flex
-                      justify-stretch
-                      sm:justify-end
-                    "
+    pt-2
+    border-t
+    border-[#677750]/10
+    flex
+    justify-stretch
+    sm:justify-end
+    gap-2
+  "
                   >
-                    <button
-                      className="
-                        w-full
-                        sm:w-auto
-                        px-4
-                        py-2.5
-                        rounded-xl
-                        text-sm
-                        font-medium
-                        bg-[#677750]
-                        text-white
-                        hover:opacity-90
-                        transition
-                      "
-                      onClick={() => {
-                        setSelectedUser(user);
-                        setOpenModal(true);
-                      }}
-                    >
-                      Editar
-                    </button>
+                    {canManageUser(user) && (
+                      <>
+                        <button
+                          className="
+          w-full
+          sm:w-auto
+          px-4
+          py-2.5
+          rounded-xl
+          text-sm
+          font-medium
+          bg-[#677750]
+          text-white
+          hover:opacity-90
+          transition
+        "
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setOpenModal(true);
+                          }}
+                        >
+                          Editar
+                        </button>
 
-                    <button
-                      className="
-                        w-full
-                        sm:w-auto
-                        px-4
-                        py-2.5
-                        rounded-xl
-                        text-sm
-                        font-medium
-                        bg-red-600
-                        text-white
-                        hover:opacity-90
-                        transition
-                      "
-                      onClick={() =>
-                        handleDelete(user.id, `${user.nombre} ${user.apellido}`)
-                      }
-                    >
-                      Eliminar
-                    </button>
+                        <button
+                          className="
+          w-full
+          sm:w-auto
+          px-4
+          py-2.5
+          rounded-xl
+          text-sm
+          font-medium
+          bg-red-600
+          text-white
+          hover:opacity-90
+          transition
+        "
+                          onClick={() =>
+                            handleDelete(
+                              user.id,
+                              `${user.nombre} ${user.apellido}`,
+                            )
+                          }
+                        >
+                          Eliminar
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               ))}
@@ -814,67 +858,81 @@ export const Users = () => {
 
                     <td className="p-4">
                       <span
-                        className="
-                          px-2
-                          py-1
-                          rounded-full
-                          text-xs
-                          font-medium
-                          bg-blue-100
-                          text-blue-700
-                        "
+                        className={`
+  px-2
+  py-1
+  rounded-full
+  text-xs
+  font-medium
+
+  ${
+    user.role === "MASTER_ADMIN"
+      ? "bg-red-100 text-red-700"
+      : user.role === "ADMIN"
+        ? "bg-blue-100 text-blue-700"
+        : "bg-green-100 text-green-700"
+  }
+`}
                       >
-                        {user.role === "ADMIN" ? "ADMIN" : "USUARIO"}
+                        {user.role === "MASTER_ADMIN"
+                          ? "MASTER ADMIN"
+                          : user.role === "ADMIN"
+                            ? "ADMIN"
+                            : "USUARIO"}
                       </span>
                     </td>
 
                     <td className="p-4">
                       <div
                         className="
-                          flex
-                          flex-col
-                          gap-2
-                        "
+    flex
+    flex-col
+    gap-2
+  "
                       >
-                        <button
-                          className="
-                            px-3
-                            py-2
-                            rounded-lg
-                            text-xs
-                            bg-[#677750]
-                            text-white
-                            hover:opacity-90
-                            transition
-                          "
-                          onClick={() => {
-                            setSelectedUser(user);
-                            setOpenModal(true);
-                          }}
-                        >
-                          Editar
-                        </button>
+                        {canManageUser(user) && (
+                          <>
+                            <button
+                              className="
+          px-3
+          py-2
+          rounded-lg
+          text-xs
+          bg-[#677750]
+          text-white
+          hover:opacity-90
+          transition
+        "
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setOpenModal(true);
+                              }}
+                            >
+                              Editar
+                            </button>
 
-                        <button
-                          className="
-                            px-3
-                            py-2
-                            rounded-lg
-                            text-xs
-                            bg-red-600
-                            text-white
-                            hover:bg-red-700
-                            transition
-                          "
-                          onClick={() =>
-                            handleDelete(
-                              user.id,
-                              `${user.nombre} ${user.apellido}`,
-                            )
-                          }
-                        >
-                          Eliminar
-                        </button>
+                            <button
+                              className="
+          px-3
+          py-2
+          rounded-lg
+          text-xs
+          bg-red-600
+          text-white
+          hover:bg-red-700
+          transition
+        "
+                              onClick={() =>
+                                handleDelete(
+                                  user.id,
+                                  `${user.nombre} ${user.apellido}`,
+                                )
+                              }
+                            >
+                              Eliminar
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>

@@ -67,13 +67,6 @@ export const TransactionModal = ({ isOpen, onClose }) => {
   const { handleSubmit: submitWithFeedback } = useFormSubmit();
 
   const onSubmit = (data) => {
-    const cuentaOrigen = accounts.find(
-      (acc) => String(acc.id) === String(data.cuenta_origen_id),
-    );
-    const cuentaDestino = accounts.find(
-      (acc) => String(acc.id) === String(data.cuenta_destino_id),
-    );
-
     showConfirmToast({
       title: "Confirmar transferencia",
       message:
@@ -92,7 +85,7 @@ export const TransactionModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 px-3 sm:px-4">
+    <div className="fixed inset-0 z-[70] bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 px-3 sm:px-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md sm:max-w-lg overflow-hidden max-h-[95vh] flex flex-col">
         {/* HEADER */}
 

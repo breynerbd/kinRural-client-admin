@@ -13,40 +13,40 @@ export const LoanModal = ({
 
   if (!isOpen || !loan) return null;
 
-const handleApprove = async () => {
-  try {
-    setLoading(true);
-    await onApprove(loan.id);
-    onClose();
-  } catch {
-    showError("Error al aprobar préstamo");
-  } finally {
-    setLoading(false);
-  }
-};
+  const handleApprove = async () => {
+    try {
+      setLoading(true);
+      await onApprove(loan.id);
+      onClose();
+    } catch {
+      showError("Error al aprobar préstamo");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-const handleReject = async () => {
-  try {
-    setLoading(true);
-    await onReject(loan.id);
-    onClose();
-  } catch {
-    showError("Error al rechazar préstamo");
-  } finally {
-    setLoading(false);
-  }
-};
+  const handleReject = async () => {
+    try {
+      setLoading(true);
+      await onReject(loan.id);
+      onClose();
+    } catch {
+      showError("Error al rechazar préstamo");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-const handlePay = async (installmentId) => {
-  try {
-    setLoading(true);
-    await onPay(installmentId);
-    onClose();
-  } catch {
-    showError("Error al pagar cuota");
-  } finally {
-    setLoading(false);
-  }
+  const handlePay = async (installmentId) => {
+    try {
+      setLoading(true);
+      await onPay(installmentId);
+      onClose();
+    } catch {
+      showError("Error al pagar cuota");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getStatusConfig = (status) => {
@@ -92,7 +92,7 @@ const handlePay = async (installmentId) => {
   return (
     <div
       className="
-        fixed inset-0 z-50
+        fixed inset-0 z-[70]
         bg-black/40 backdrop-blur-sm
         flex justify-center items-center
         p-2 sm:p-4

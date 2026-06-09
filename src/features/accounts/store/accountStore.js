@@ -8,7 +8,6 @@ import {
 
 export const useAccountStore = create((set) => ({
   accounts: [],
-  account: null,
   loading: false,
 
   getAccounts: async () => {

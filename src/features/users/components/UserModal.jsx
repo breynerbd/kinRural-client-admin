@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useUsersStore } from "../store/userStore";
 import { useSaveUser } from "../hooks/useSaveUser";
 import { useFormSubmit } from "../../../shared/hooks/useFormSubmit";
+import { useAuthStore } from "../../auth/store/authStore";
 
 export const UserModal = ({ isOpen, onClose, user }) => {
   const {
@@ -13,6 +14,12 @@ export const UserModal = ({ isOpen, onClose, user }) => {
   } = useForm();
 
   const { saveUser } = useSaveUser();
+
+  const currentUser = useAuthStore((state) => state.user);
+
+  const isMasterAdmin = currentUser?.role === "MASTER_ADMIN";
+
+  const isEditingMasterAdmin = user?.role === "MASTER_ADMIN";
 
   const loading = useUsersStore((state) => state.loading);
 
@@ -38,7 +45,7 @@ export const UserModal = ({ isOpen, onClose, user }) => {
           telefono: "",
           direccion: "",
           ingresos_mensuales: "",
-          role: "",
+          role: "USER",
           username: "",
           password: "",
         });
@@ -57,12 +64,16 @@ export const UserModal = ({ isOpen, onClose, user }) => {
       onClose,
     });
 
+  if (isEditingMasterAdmin && !isMasterAdmin) {
+    return null;
+  }
+
   if (!isOpen) return null;
 
   return (
     <div
       className="
-        fixed inset-0 z-50
+        fixed inset-0 z-[70]
         bg-black/50 backdrop-blur-sm
         flex justify-center items-center
         p-2 sm:p-4
@@ -182,23 +193,25 @@ export const UserModal = ({ isOpen, onClose, user }) => {
             </div>
 
             {/* DPI */}
-            <div className="flex flex-col min-w-0">
-              <label className="label">DPI</label>
+            {!user && (
+              <div className="flex flex-col min-w-0">
+                <label className="label">DPI</label>
 
-              <input
-                className="input"
-                placeholder="1234567890101"
-                {...register("dpi", {
-                  required: "El DPI es obligatorio",
-                  pattern: {
-                    value: /^[0-9]{13}$/,
-                    message: "El DPI debe tener exactamente 13 dígitos",
-                  },
-                })}
-              />
+                <input
+                  className="input"
+                  placeholder="1234567890101"
+                  {...register("dpi", {
+                    required: "El DPI es obligatorio",
+                    pattern: {
+                      value: /^[0-9]{13}$/,
+                      message: "El DPI debe tener exactamente 13 dígitos",
+                    },
+                  })}
+                />
 
-              {errors.dpi && <p className="error">{errors.dpi.message}</p>}
-            </div>
+                {errors.dpi && <p className="error">{errors.dpi.message}</p>}
+              </div>
+            )}
 
             {/* CORREO */}
             <div className="flex flex-col min-w-0">
@@ -299,9 +312,16 @@ export const UserModal = ({ isOpen, onClose, user }) => {
               >
                 <option value="">Seleccione un rol</option>
 
-                <option value="ADMIN">ADMINISTRADOR</option>
-
+                {/* TODOS PUEDEN CREAR USER */}
                 <option value="USER">USUARIO</option>
+
+                {/* SOLO MASTER_ADMIN PUEDE CREAR ADMIN */}
+                {isMasterAdmin && <option value="ADMIN">ADMINISTRADOR</option>}
+
+                {/* SOLO MASTER_ADMIN PUEDE CREAR MASTER_ADMIN */}
+                {isMasterAdmin && (
+                  <option value="MASTER_ADMIN">MASTER ADMIN</option>
+                )}
               </select>
 
               {errors.role && <p className="error">{errors.role.message}</p>}

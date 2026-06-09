@@ -21,7 +21,7 @@ export const useAuthStore = create(
       checkAuth: () => {
         const token = get().token;
         const role = get().user?.role;
-        const isAdmin = role === "ADMIN";
+        const isAdmin = role === "ADMIN" || role === "MASTER_ADMIN";
 
         if (token && !isAdmin) {
           set({
@@ -76,7 +76,7 @@ export const useAuthStore = create(
           const username = decoded.username;
           const userEmail = decoded.email;
 
-          if (role !== "ADMIN") {
+          if (role !== "ADMIN" && role !== "MASTER_ADMIN") {
             const message =
               "No autorizado para acceder al panel de administración";
 

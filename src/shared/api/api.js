@@ -1,15 +1,16 @@
-import axios from 'axios';
+import axios from "axios";
 
 import { useAuthStore } from "../../features/auth/store/authStore.js";
 
 //instancia
 
 const axiosAuth = axios.create({
-  baseURL: import.meta.env.VITE_AUTH_URL || "http://localhost:5070/api/v1/auth/",
+  baseURL:
+    import.meta.env.VITE_AUTH_URL || "http://localhost:5070/api/v1/auth/",
   timeout: 8000,
   headers: {
     "Content-Type": "application/json",
-  }
+  },
 });
 
 const axiosAdmin = axios.create({
@@ -19,7 +20,6 @@ const axiosAdmin = axios.create({
     "Content-Type": "application/json",
   },
 });
-
 
 axiosAuth.interceptors.request.use((config) => {
   config._axiosClient = "auth";

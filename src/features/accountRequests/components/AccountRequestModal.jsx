@@ -3,7 +3,8 @@ import { useAccountRequestStore } from "../store/accountRequestStore";
 import { showSuccess, showError } from "../../../shared/utils/toast";
 
 export const AccountRequestModal = ({ isOpen, onClose, request }) => {
-  const { approveAccountRequest, rejectAccountRequest } = useSaveAccountRequest();
+  const { approveAccountRequest, rejectAccountRequest } =
+    useSaveAccountRequest();
 
   const actionLoading = useAccountRequestStore((state) => state.actionLoading);
 
@@ -41,7 +42,7 @@ export const AccountRequestModal = ({ isOpen, onClose, request }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-3">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/40 backdrop-blur-sm px-3">
       <div className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* HEADER */}
         <div className="bg-[#677750] p-6 text-white">
