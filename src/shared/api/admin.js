@@ -64,3 +64,11 @@ export const getTransactionsByAccount = (id) =>
 
 export const createTransaction = (data) =>
   axiosAdmin.post("/transactions", data);
+
+// ================= EXCHANGE =================
+export const convertCurrency = (monto, moneda_origen, moneda_destino) =>
+  axiosAdmin.get(
+    `/exchange/convert?monto=${monto}&moneda_origen=${moneda_origen}&moneda_destino=${moneda_destino}`,
+  );
+
+export const getCurrencies = () => axiosAdmin.get("/exchange/currencies");

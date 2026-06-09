@@ -16,12 +16,15 @@ export const useFormSubmit = () => {
     } catch (error) {
       const data = error.response?.data;
 
-      const message =
-        typeof data?.message === "string"
-          ? data.message
-          : typeof data?.error === "string"
-            ? data.error
-            : errorMsg;
+      let message = errorMsg;
+
+      if (Array.isArray(data?.error) && data.error.length > 0) {
+        message = data.error[0].message;
+      } else if (typeof data?.message === "string") {
+        message = data.message;
+      } else if (typeof data?.error === "string") {
+        message = data.error;
+      }
 
       showError(message);
     }

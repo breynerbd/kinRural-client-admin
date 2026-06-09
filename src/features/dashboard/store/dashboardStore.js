@@ -1,202 +1,162 @@
 import { create } from "zustand";
 
-import { getUsers } from "../../../shared/api";
-
 import {
+  getUsers,
   getAccounts,
   getLoans,
+  getTransactions,
+  getCurrencies,
 } from "../../../shared/api/admin";
 
-import { getTransactions } from "../../../shared/api";
+export const useDashboardStore = create((set) => ({
+  stats: {
+    users: 0,
+    accounts: 0,
+    loans: 0,
+    transactions: 0,
+    totalMoneyMoved: 0,
+    pendingLoans: 0,
+    approvedLoans: 0,
+  },
 
-export const useDashboardStore = create(
-  (set) => ({
-    stats: {
-      users: 0,
-      accounts: 0,
-      loans: 0,
-      transactions: 0,
-      totalMoneyMoved: 0,
-      pendingLoans: 0,
-      approvedLoans: 0,
-    },
+  recentTransactions: [],
+  exchangeRates: [],
 
-    recentTransactions: [],
+  chartData: [],
 
-    chartData: [],
+  loading: false,
+  error: null,
 
-    loading: false,
-    error: null,
+  loadDashboard: async () => {
+    try {
+      set({
+        loading: true,
+        error: null,
+      });
 
-    loadDashboard: async () => {
-      try {
-        set({
-          loading: true,
-          error: null,
-        });
-
-        const [
-          usersRes,
-          accountsRes,
-          loansRes,
-          transactionsRes,
-        ] = await Promise.all([
+      const [usersRes, accountsRes, loansRes, transactionsRes, ratesRes] =
+        await Promise.all([
           getUsers(),
           getAccounts(),
           getLoans(),
           getTransactions(),
+          getCurrencies(),
         ]);
 
-        // USERS
-        const users =
-          usersRes?.data?.data || [];
+      // USERS
+      const users = usersRes?.data?.users || [];
 
-        // ACCOUNTS
-        const accounts =
-          accountsRes?.data?.accounts || [];
+      // ACCOUNTS
+      const accounts = accountsRes?.data?.accounts || [];
 
-        // LOANS
-        const loans =
-          loansRes?.data?.loans || [];
+      // LOANS
+      const loans = loansRes?.data?.loans || [];
 
-        // TRANSACTIONS
-        const transactions =
-          transactionsRes?.data || [];
+      // TRANSACTIONS
+      const transactions = transactionsRes?.data?.transactions || [];
 
-        // TOTAL MONEY MOVED
-        const totalMoneyMoved =
-          transactions.reduce(
-            (acc, tx) =>
-              acc +
-              Number(tx.monto || 0),
-            0
-          );
+      //EXCHANGES
 
-        // LOAN STATES
-        const pendingLoans =
-          loans.filter(
-            (loan) =>
-              loan.estado ===
-              "PENDIENTE"
-          ).length;
+      const exchangeRates = ratesRes?.data?.monedas || [];
 
-        const approvedLoans =
-          loans.filter(
-            (loan) =>
-              loan.estado ===
-              "APROBADO"
-          ).length;
+      // TOTAL MONEY MOVED
+      const totalMoneyMoved = transactions.reduce(
+        (acc, tx) => acc + Number(tx.monto || 0),
+        0,
+      );
 
-        // RECENT TRANSACTIONS
-        const recentTransactions =
-          [...transactions]
-            .sort(
-              (a, b) =>
-                new Date(
-                  b.fecha ||
-                    b.createdAt
-                ) -
-                new Date(
-                  a.fecha ||
-                    a.createdAt
-                )
-            )
-            .slice(0, 5);
+      // LOAN STATES
+      const pendingLoans = loans.filter(
+        (loan) => loan.estado === "PENDIENTE",
+      ).length;
 
-        // CHART DATA
-        const monthlyMap = {};
+      const approvedLoans = loans.filter(
+        (loan) => loan.estado === "APROBADO",
+      ).length;
 
-        transactions.forEach((tx) => {
-          const date = new Date(
-            tx.fecha ||
-              tx.createdAt
-          );
+      // RECENT TRANSACTIONS
+      const recentTransactions = [...transactions]
+        .sort(
+          (a, b) =>
+            new Date(b.fecha || b.createdAt) - new Date(a.fecha || a.createdAt),
+        )
+        .slice(0, 5);
 
-          if (
-            Number.isNaN(
-              date.getTime()
-            )
-          ) {
-            return;
-          }
+      // CHART DATA
+      const monthlyMap = {};
 
-          const monthIndex =
-            date.getMonth();
+      transactions.forEach((tx) => {
+        const date = new Date(tx.fecha || tx.createdAt);
 
-          if (
-            !monthlyMap[monthIndex]
-          ) {
-            monthlyMap[monthIndex] =
-              {
-                month:
-                  date.toLocaleString(
-                    "es-GT",
-                    {
-                      month:
-                        "short",
-                    }
-                  ),
+        if (Number.isNaN(date.getTime())) {
+          return;
+        }
 
-                transactions: 0,
+        const monthIndex = date.getMonth();
 
-                order:
-                  monthIndex,
-              };
-          }
+        if (!monthlyMap[monthIndex]) {
+          monthlyMap[monthIndex] = {
+            month: date.toLocaleString("es-GT", {
+              month: "short",
+            }),
 
-          monthlyMap[
-            monthIndex
-          ].transactions += 1;
-        });
+            transactions: 0,
 
-        const chartData =
-          Object.values(
-            monthlyMap
-          ).sort(
-            (a, b) =>
-              a.order - b.order
-          );
+            order: monthIndex,
+          };
+        }
 
-        set({
-          stats: {
-            users: users.length,
+        monthlyMap[monthIndex].transactions += 1;
+      });
 
-            accounts:
-              accounts.length,
+      const chartData = Object.values(monthlyMap).sort(
+        (a, b) => a.order - b.order,
+      );
 
-            loans: loans.length,
+      set({
+        stats: {
+          users: users.length,
 
-            transactions:
-              transactions.length,
+          accounts: accounts.length,
 
-            totalMoneyMoved,
+          loans: loans.length,
 
-            pendingLoans,
+          transactions: transactions.length,
 
-            approvedLoans,
-          },
+          totalMoneyMoved,
 
-          recentTransactions,
+          pendingLoans,
 
-          chartData,
-        });
-      } catch (error) {
-        console.error(
-          "Error loading dashboard:",
-          error
-        );
+          approvedLoans,
+        },
 
-        set({
-          error:
-            error?.response?.data
-              ?.message ||
-            "Error al cargar dashboard",
-        });
-      } finally {
-        set({
-          loading: false,
-        });
-      }
-    },
-  })
-);
+        recentTransactions,
+
+        chartData,
+
+        exchangeRates,
+      });
+      console.log("TRANSACTIONS:", transactions);
+      console.log("CHART DATA:", chartData);
+    } catch (error) {
+      console.error("Error loading dashboard:", error);
+
+      set({
+        error: error?.response?.data?.message || "Error al cargar dashboard",
+      });
+    } finally {
+      set({
+        loading: false,
+      });
+    }
+  },
+
+  loadExchangeRates: async () => {
+    try {
+      const res = await getCurrencies();
+      set({ exchangeRates: res.data.monedas });
+    } catch {
+      console.error("Error cargando tasas");
+    }
+  },
+}));

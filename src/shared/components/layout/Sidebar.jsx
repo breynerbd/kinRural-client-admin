@@ -17,6 +17,7 @@ export const Sidebar = ({ open, setOpen }) => {
       label: "Transacciones",
       path: "/dashboard/transactions",
     },
+    { label: "Divisas", path: "/dashboard/exchange" },
   ];
 
   return (

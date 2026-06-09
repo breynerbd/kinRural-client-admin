@@ -9,27 +9,21 @@ export const TransactionsStore = create((set) => ({
   transactions: [],
   isLoading: false,
 
-getTransactions: async () => {
-  try {
-    set({ isLoading: true });
-
-    const { data } = await getTransactions();
-
-    set({
-      transactions: data,
-      isLoading: false,
-    });
-
-  } finally {
-    set({ isLoading: false });
-  }
-},
+  getTransactions: async () => {
+    try {
+      set({ isLoading: true });
+      const res = await getTransactions();
+      set({ transactions: res.data.transactions || [] });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 
   getTransactionsByAccount: async (accountId) => {
     try {
       set({ isLoading: true });
-      const { data } = await getTransactionsByAccount(accountId);
-      set({ transactions: data, isLoading: false });
+      const res = await getTransactionsByAccount(accountId);
+      set({ transactions: res.data.transactions });
     } finally {
       set({ isLoading: false });
     }
@@ -42,11 +36,11 @@ getTransactions: async () => {
         cuenta_destino_id: Number(formData.cuenta_destino_id),
         monto: Number(formData.monto),
       };
-      const { data } = await createTransaction(payload);
+      const res = await createTransaction(payload);
       set((state) => ({
-        transactions: [data.transaction, ...state.transactions],
+        transactions: [res.data.transaction, ...state.transactions],
       }));
-      return data;
+      return { ok: true };
     } finally {
       set({ isLoading: false });
     }

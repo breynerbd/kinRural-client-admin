@@ -17,6 +17,7 @@ import { Cards } from "../../features/cards/components/Cards.jsx";
 import { CardModal } from "../../features/cards/components/CardModal.jsx";
 import { Transactions } from "../../features/transactions/components/Transactions.jsx";
 import { TransactionModal } from "../../features/transactions/components/TransactionModal.jsx";
+import { Exchange } from "../../features/exchange/components/Exchange.jsx";
 
 export const AppRoutes = () => {
   return (
@@ -43,6 +44,7 @@ export const AppRoutes = () => {
           <Route path="cards/review" element={<CardModal />} />
           <Route path="transactions" element={<Transactions />} />
           <Route path="transactions/review" element={<TransactionModal />} />
+          <Route path="exchange" element={<Exchange />} />
         </Route>
       </Route>
 
