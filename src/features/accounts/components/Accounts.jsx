@@ -23,7 +23,7 @@ export const Accounts = () => {
   // ================= FILTER =================
 
   const filteredAccounts = accounts.filter((account) =>
-    searchId === "" ? true : account.id.toString().includes(searchId)
+    searchId === "" ? true : account.id.toString().includes(searchId),
   );
 
   // ================= DELETE =================
@@ -36,8 +36,11 @@ export const Accounts = () => {
         try {
           await deleteAccount(id);
           showSuccess("Cuenta eliminada correctamente");
-        } catch {
-          showError("Error al eliminar cuenta");
+        } catch (error) {
+          const message =
+            error?.response?.data?.message || "Error al eliminar cuenta";
+
+          showError(message);
         }
       },
     });
@@ -118,16 +121,22 @@ export const Accounts = () => {
                 >
                   <div className="flex flex-col gap-4 flex-1 min-w-0">
                     <div>
-                      <p className="text-xs text-[#677750]/50 mb-1">Número de cuenta</p>
+                      <p className="text-xs text-[#677750]/50 mb-1">
+                        Número de cuenta
+                      </p>
                       <p className="text-sm sm:text-base font-semibold text-[#677750] break-all">
                         {account.numero_cuenta}
                       </p>
                     </div>
 
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <span className={`w-fit px-3 py-1 rounded-full text-xs font-medium ${
-                        account.tipo === "AHORRO" ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"
-                      }`}>
+                      <span
+                        className={`w-fit px-3 py-1 rounded-full text-xs font-medium ${
+                          account.tipo === "AHORRO"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-blue-100 text-blue-700"
+                        }`}
+                      >
                         {account.tipo}
                       </span>
                       <span className="text-green-600 font-bold text-sm sm:text-base">
@@ -136,12 +145,17 @@ export const Accounts = () => {
                     </div>
 
                     <div className="pt-3 border-t border-[#677750]/10">
-                      <p className="text-xs text-[#677750]/50 mb-1 text-uppercase">Propietario</p>
+                      <p className="text-xs text-[#677750]/50 mb-1 text-uppercase">
+                        Propietario
+                      </p>
                       <p className="text-sm font-bold text-[#677750]">
-                        {account.user ? `${account.user.nombre} ${account.user.apellido}` : "Sin asignar"}
+                        {account.user
+                          ? `${account.user.nombre} ${account.user.apellido}`
+                          : "Sin asignar"}
                       </p>
                       <p className="text-[10px] text-[#677750]/60">
-                        ID Usuario: #{account.user_id} | ID Cuenta: #{account.id}
+                        ID Usuario: #{account.user_id} | ID Cuenta: #
+                        {account.id}
                       </p>
                     </div>
                   </div>
@@ -186,15 +200,22 @@ export const Accounts = () => {
                 </tr>
               ) : filteredAccounts.length > 0 ? (
                 filteredAccounts.map((account) => (
-                  <tr key={account.id} className="border-b border-[#677750]/5 hover:bg-[#fffaf2]/40 transition">
+                  <tr
+                    key={account.id}
+                    className="border-b border-[#677750]/5 hover:bg-[#fffaf2]/40 transition"
+                  >
                     <td className="p-4 font-medium text-[#677750] break-all">
                       {account.numero_cuenta}
                     </td>
 
                     <td className="p-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        account.tipo === "AHORRO" ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"
-                      }`}>
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          account.tipo === "AHORRO"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-blue-100 text-blue-700"
+                        }`}
+                      >
                         {account.tipo}
                       </span>
                     </td>
@@ -206,10 +227,13 @@ export const Accounts = () => {
                     <td className="p-4">
                       <div className="flex flex-col min-w-0">
                         <span className="font-bold text-[#677750] truncate">
-                          {account.user ? `${account.user.nombre} ${account.user.apellido}` : "USUARIO NO ENCONTRADO"}
+                          {account.user
+                            ? `${account.user.nombre} ${account.user.apellido}`
+                            : "USUARIO NO ENCONTRADO"}
                         </span>
                         <span className="text-[11px] text-[#677750]/50">
-                          ID Usuario: #{account.user_id} | ID Cuenta: #{account.id}
+                          ID Usuario: #{account.user_id} | ID Cuenta: #
+                          {account.id}
                         </span>
                       </div>
                     </td>

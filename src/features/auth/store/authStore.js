@@ -73,7 +73,8 @@ export const useAuthStore = create(
             decoded[
               "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
             ];
-          const username = decoded.username;
+          const username =
+            decoded.username || decoded.unique_name || decoded.sub;
           const userEmail = decoded.email;
 
           if (role !== "ADMIN" && role !== "MASTER_ADMIN") {
