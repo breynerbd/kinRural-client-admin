@@ -6,17 +6,14 @@ import { TransactionsStore } from "../store/TransactionsStore";
 
 export const Transactions = () => {
   const transactions = TransactionsStore((state) => state.transactions);
-
   const getTransactions = TransactionsStore((state) => state.getTransactions);
-
   const isLoading = TransactionsStore((state) => state.isLoading);
 
   const [searchAccountId, setSearchAccountId] = useState("");
-
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   /* =========================
-     LOAD
+      LOAD
   ========================= */
 
   useEffect(() => {
@@ -24,27 +21,29 @@ export const Transactions = () => {
   }, [getTransactions]);
 
   /* =========================
-     FILTERS
+      FILTERS
   ========================= */
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter((transaction) => {
-      return String(transaction.cuenta_origen_id ?? "").includes(
-        searchAccountId,
-      );
+      // Si no cuenta con origen (caso depósito), igualar a un string vacío para evitar romper el filter
+      const origenId = transaction.cuenta_origen_id
+        ? String(transaction.cuenta_origen_id)
+        : "";
+      return origenId.includes(searchAccountId);
     });
   }, [transactions, searchAccountId]);
 
   return (
     <div
       className="
-    w-full
-    min-w-0
-    overflow-x-hidden
-    p-3
-    sm:p-4
-    md:p-6
-  "
+        w-full
+        min-w-0
+        overflow-x-hidden
+        p-3
+        sm:p-4
+        md:p-6
+      "
     >
       {/* HEADER */}
 
@@ -91,8 +90,7 @@ export const Transactions = () => {
           onClick={() => setIsModalOpen(true)}
           className="
             w-full
-            sm:w-full
-            md:w-auto
+            sm:w-auto
             shrink-0
             bg-[#677750]
             px-4
@@ -106,7 +104,7 @@ export const Transactions = () => {
             transition
           "
         >
-          + Nueva Transferencia
+          + Nueva Transacción
         </button>
       </div>
 
@@ -271,63 +269,63 @@ export const Transactions = () => {
           {isLoading ? (
             <div
               className="
-                  p-6
-                  text-center
-                  text-sm
-                  text-[#677750]/60
-                "
+                p-6
+                text-center
+                text-sm
+                text-[#677750]/60
+              "
             >
               Cargando transacciones...
             </div>
           ) : filteredTransactions.length > 0 ? (
             <div
               className="
-                  divide-y
-                  divide-[#677750]/10
-                "
+                divide-y
+                divide-[#677750]/10
+              "
             >
               {filteredTransactions.map((transaction) => (
                 <div
                   key={transaction.id}
                   className="
-    p-4
-    sm:p-5
-    space-y-4
-    min-w-0
-  "
+                    p-4
+                    sm:p-5
+                    space-y-4
+                    min-w-0
+                  "
                 >
                   {/* TOP */}
 
                   <div
                     className="
-    flex
-    flex-col
-    sm:flex-row
-    sm:items-center
-    sm:justify-between
-    gap-3
-    min-w-0
-  "
+                      flex
+                      flex-col
+                      sm:flex-row
+                      sm:items-center
+                      sm:justify-between
+                      gap-3
+                      min-w-0
+                    "
                   >
                     <div className="min-w-0">
                       <p
                         className="
-                              text-xs
-                              text-[#677750]/50
-                              mb-1
-                            "
+                          text-xs
+                          text-[#677750]/50
+                          mb-1
+                        "
                       >
                         ID
                       </p>
 
                       <p
                         className="
-                              font-semibold
-                              text-[#677750]
-                              text-sm
-                              sm:text-base
-                              break-all
-                            "
+                          font-semibold
+                          text-[#677750]
+                          text-sm
+                          sm:text-base
+                          break-all
+                        "
                       >
                         #{transaction.id}
                       </p>
@@ -335,36 +333,36 @@ export const Transactions = () => {
 
                     <div
                       className="
-    flex
-    flex-wrap
-    items-center
-    gap-2
-      min-w-0
-    "
+                        flex
+                        flex-wrap
+                        items-center
+                        gap-2
+                        min-w-0
+                      "
                     >
                       <span
                         className="
-                              px-3
-                              py-1
-                              rounded-full
-                              text-xs
-                              font-medium
-                              bg-[#677750]/10
-                              text-[#677750]
-                              break-all
-                            "
+                          px-3
+                          py-1
+                          rounded-full
+                          text-xs
+                          font-medium
+                          bg-[#677750]/10
+                          text-[#677750]
+                          break-all
+                        "
                       >
                         {transaction.tipo}
                       </span>
 
                       <span
                         className="
-                              text-green-600
-                              font-bold
-                              text-sm
-                              sm:text-base
-                              break-all
-                            "
+                          text-green-600
+                          font-bold
+                          text-sm
+                          sm:text-base
+                          break-all
+                        "
                       >
                         Q{transaction.monto}
                       </span>
@@ -375,73 +373,77 @@ export const Transactions = () => {
 
                   <div
                     className="
-                          grid
-                          grid-cols-1
-                          sm:grid-cols-2
-                          gap-4
-                        "
+                      grid
+                      grid-cols-1
+                      sm:grid-cols-2
+                      gap-4
+                    "
                   >
                     <div className="min-w-0">
                       <p
                         className="
-                              text-xs
-                              text-[#677750]/50
-                              mb-1
-                            "
+                          text-xs
+                          text-[#677750]/50
+                          mb-1
+                        "
                       >
                         Cuenta Origen
                       </p>
 
                       <p
                         className="
-                              text-sm
-                              text-[#677750]/70
-                              break-all
-                            "
+                          text-sm
+                          text-[#677750]/70
+                          break-all
+                        "
                       >
-                        #{transaction.cuenta_origen_id}
+                        {transaction.cuenta_origen_id
+                          ? `#${transaction.cuenta_origen_id}`
+                          : "N/A (DEPÓSITO)"}
                       </p>
                     </div>
 
                     <div className="min-w-0">
                       <p
                         className="
-                              text-xs
-                              text-[#677750]/50
-                              mb-1
-                            "
+                          text-xs
+                          text-[#677750]/50
+                          mb-1
+                        "
                       >
                         Cuenta Destino
                       </p>
 
                       <p
                         className="
-                              text-sm
-                              text-[#677750]/70
-                              break-all
-                            "
+                          text-sm
+                          text-[#677750]/70
+                          break-all
+                        "
                       >
-                        #{transaction.cuenta_destino_id}
+                        {transaction.cuenta_destino_id
+                          ? `#${transaction.cuenta_destino_id}`
+                          : "N/A (RETIRO)"}
                       </p>
                     </div>
 
                     <div className="sm:col-span-2 min-w-0">
                       <p
                         className="
-                              text-xs
-                              text-[#677750]/50
-                              mb-1
-                            "
+                          text-xs
+                          text-[#677750]/50
+                          mb-1
+                        "
                       >
                         Fecha
                       </p>
 
                       <p
                         className="
-                              text-sm
-                              text-[#677750]/70
-                              break-all
-                            "
+                          text-sm
+                          text-[#677750]/70
+                          break-all
+                        "
                       >
                         {new Date(transaction.createdAt).toLocaleDateString()}
                       </p>
@@ -453,11 +455,11 @@ export const Transactions = () => {
           ) : (
             <div
               className="
-                  p-6
-                  text-center
-                  text-sm
-                  text-[#677750]/60
-                "
+                p-6
+                text-center
+                text-sm
+                text-[#677750]/60
+              "
             >
               No hay transacciones disponibles
             </div>
@@ -468,16 +470,16 @@ export const Transactions = () => {
 
         <div
           className="
-    hidden
-    2xl:block
-    w-full
-  "
+            hidden
+            2xl:block
+            w-full
+          "
         >
           <table
             className="
-      w-full
-      text-sm
-    "
+              w-full
+              text-sm
+            "
           >
             <thead
               className="
@@ -490,15 +492,10 @@ export const Transactions = () => {
             >
               <tr>
                 <th className="p-4 whitespace-nowrap">ID</th>
-
                 <th className="p-4 whitespace-nowrap">Tipo</th>
-
                 <th className="p-4 whitespace-nowrap">Cuenta Origen</th>
-
                 <th className="p-4 whitespace-nowrap">Cuenta Destino</th>
-
                 <th className="p-4 whitespace-nowrap">Monto</th>
-
                 <th className="p-4 whitespace-nowrap">Fecha</th>
               </tr>
             </thead>
@@ -509,10 +506,10 @@ export const Transactions = () => {
                   <td
                     colSpan="6"
                     className="
-                        p-6
-                        text-center
-                        text-[#677750]/60
-                      "
+                      p-6
+                      text-center
+                      text-[#677750]/60
+                    "
                   >
                     Cargando transacciones...
                   </td>
@@ -522,19 +519,19 @@ export const Transactions = () => {
                   <tr
                     key={transaction.id}
                     className="
-                        border-b
-                        border-[#677750]/5
-                        hover:bg-[#fffaf2]/50
-                        transition
-                      "
+                      border-b
+                      border-[#677750]/5
+                      hover:bg-[#fffaf2]/50
+                      transition
+                    "
                   >
                     <td
                       className="
-                          p-4
-                          font-medium
-                          text-[#677750]
-                          whitespace-nowrap
-                        "
+                        p-4
+                        font-medium
+                        text-[#677750]
+                        whitespace-nowrap
+                      "
                     >
                       #{transaction.id}
                     </td>
@@ -542,15 +539,15 @@ export const Transactions = () => {
                     <td className="p-4">
                       <span
                         className="
-                            px-2
-                            py-1
-                            rounded-full
-                            text-xs
-                            font-medium
-                            bg-[#677750]/10
-                            text-[#677750]
-                            whitespace-nowrap
-                          "
+                          px-2
+                          py-1
+                          rounded-full
+                          text-xs
+                          font-medium
+                          bg-[#677750]/10
+                          text-[#677750]
+                          whitespace-nowrap
+                        "
                       >
                         {transaction.tipo}
                       </span>
@@ -558,41 +555,45 @@ export const Transactions = () => {
 
                     <td
                       className="
-                          p-4
-                          text-[#677750]/70
-                          whitespace-nowrap
-                        "
+                        p-4
+                        text-[#677750]/70
+                        whitespace-nowrap
+                      "
                     >
-                      #{transaction.cuenta_origen_id}
+                      {transaction.cuenta_origen_id
+                        ? `#${transaction.cuenta_origen_id}`
+                        : "N/A (DEPÓSITO)"}
                     </td>
 
                     <td
                       className="
-                          p-4
-                          text-[#677750]/70
-                          whitespace-nowrap
-                        "
+                        p-4
+                        text-[#677750]/70
+                        whitespace-nowrap
+                      "
                     >
-                      #{transaction.cuenta_destino_id}
+                      {transaction.cuenta_destino_id
+                        ? `#${transaction.cuenta_destino_id}`
+                        : "N/A (RETIRO)"}
                     </td>
 
                     <td
                       className="
-                          p-4
-                          text-green-600
-                          font-semibold
-                          whitespace-nowrap
-                        "
+                        p-4
+                        text-green-600
+                        font-semibold
+                        whitespace-nowrap
+                      "
                     >
                       Q{transaction.monto}
                     </td>
 
                     <td
                       className="
-                          p-4
-                          text-[#677750]/60
-                          whitespace-nowrap
-                        "
+                        p-4
+                        text-[#677750]/60
+                        whitespace-nowrap
+                      "
                     >
                       {new Date(transaction.createdAt).toLocaleDateString()}
                     </td>
@@ -603,10 +604,10 @@ export const Transactions = () => {
                   <td
                     colSpan="6"
                     className="
-                        p-6
-                        text-center
-                        text-[#677750]/60
-                      "
+                      p-6
+                      text-center
+                      text-[#677750]/60
+                    "
                   >
                     No hay transacciones disponibles
                   </td>

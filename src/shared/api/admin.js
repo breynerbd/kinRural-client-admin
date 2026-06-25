@@ -62,8 +62,17 @@ export const getTransactions = () => axiosAdmin.get("/transactions");
 export const getTransactionsByAccount = (id) =>
   axiosAdmin.get(`/transactions/${id}`);
 
+// Este se queda para las TRANSFERENCIAS convencionales (POST /transactions)
 export const createTransaction = (data) =>
   axiosAdmin.post("/transactions", data);
+
+// 👈 NUEVO: Endpoint específico para DEPOSITOS (POST /transactions/deposit)
+export const createDeposit = (data) =>
+  axiosAdmin.post("/transactions/deposit", data);
+
+// 👈 NUEVO: Endpoint específico para RETIROS (POST /transactions/withdraw)
+export const createWithdraw = (data) =>
+  axiosAdmin.post("/transactions/withdraw", data);
 
 // ================= EXCHANGE =================
 export const convertCurrency = (monto, moneda_origen, moneda_destino) =>
