@@ -1,0 +1,39 @@
+# Control de versiones (¡Adiós a esos miles de archivos de Git!)
+.git
+.gitignore
+
+# Dependencias locales (se deben instalar dentro del contenedor)
+node_modules
+/node_modules
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Directorios de compilación y caché de herramientas
+dist
+build
+.next
+.nuxt
+.cache
+.vite
+
+# Configuración de editores e IDEs
+.vscode
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs y depuración
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+eslintcache
+.eslintcache
+
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db

@@ -5,8 +5,7 @@ import { useAuthStore } from "../../features/auth/store/authStore.js";
 //instancia
 
 const axiosAuth = axios.create({
-  baseURL:
-    import.meta.env.VITE_AUTH_URL || "http://localhost:5070/api/v1/auth/",
+  baseURL: import.meta.env.VITE_AUTH_URL || "http://localhost:5070",
   timeout: 8000,
   headers: {
     "Content-Type": "application/json",
